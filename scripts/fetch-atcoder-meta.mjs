@@ -1,8 +1,9 @@
 // Build-time snapshot of AtCoder problem titles/difficulties (fallback when the browser can't fetch them directly).
-import { writeFileSync } from 'node:fs';
+import { mkdirSync, writeFileSync } from 'node:fs';
 
 const RES = 'https://kenkoooo.com/atcoder/resources';
 const out = new URL('../public/atcoder-meta.json', import.meta.url);
+mkdirSync(new URL('.', out), { recursive: true });
 try {
   const [problems, models] = await Promise.all([
     fetch(`${RES}/problems.json`).then((r) => r.json()),
