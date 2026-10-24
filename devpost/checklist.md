@@ -8,7 +8,7 @@ Build mode: fast (learner asked for autonomous execution from the brief; agent r
 
 ## Slices
 
-- [ ] **1. Add a problem by URL, see it in Today, rate it and watch it move**
+- [x] **1. Add a problem by URL, see it in Today, rate it and watch it move**
   Becomes usable: A running app where a pasted yukicoder/AtCoder/Codeforces/LeetCode/AOJ URL appears in Today with a judge badge and link; Easy/Hard/Failed reschedules it; it survives reload.
   Why now: This is the kernel's scheduling loop end to end (scaffold, URL parser, SM-2, Today, persistence) — everything later feeds into it.
   PRD ref: `prd.md > Manual add by URL`, `prd.md > Review scheduling (forgetting curve)`, `prd.md > Today view`
@@ -18,7 +18,7 @@ Build mode: fast (learner asked for autonomous execution from the brief; agent r
   Learner check: Open the app, paste https://yukicoder.me/problems/no/3, rate it Easy, reload — it's gone from Today and listed for 3 days later.
   Commit: `Add manual problems, SM-2 scheduling and Today view`
 
-- [ ] **2. Import struggles from AtCoder and Codeforces with a preview**
+- [x] **2. Import struggles from AtCoder and Codeforces with a preview**
   Becomes usable: Typing `chokudai` / `tourist` fetches real histories, previews struggled problems with verdict chips, and adds the chosen ones to the schedule (≤ N new per day).
   Why now: The cross-judge import is the riskiest external dependency and the unique kernel.
   PRD ref: `prd.md > Importing struggles from judges`, `prd.md > The Core Journey` (steps 2–3)
@@ -28,7 +28,7 @@ Build mode: fast (learner asked for autonomous execution from the brief; agent r
   Learner check: Import with the demo handles and look at the preview — do the verdict chips match what you'd expect?
   Commit: `Import AtCoder and Codeforces struggles with preview`
 
-- [ ] **3. Library and problem drawer with mistake notes, history and memory curve**
+- [x] **3. Library and problem drawer with mistake notes, history and memory curve**
   Becomes usable: Browse/filter everything tracked; open a problem to write a mistake note (shown on Today), see review history and a forgetting-curve chart.
   Why now: Turns a list into a coherent product and makes the forgetting curve visible.
   PRD ref: `prd.md > Library`, `prd.md > Mistake notes`, `prd.md > Screens and Layout`
@@ -38,7 +38,7 @@ Build mode: fast (learner asked for autonomous execution from the brief; agent r
   Learner check: Open a Codeforces problem, write "forgot overflow", and see it on its Today row.
   Commit: `Add library, problem drawer, notes and memory curve`
 
-- [ ] **4. Settings, demo clock, backup and polished states**
+- [x] **4. Settings, demo clock, backup and polished states**
   Becomes usable: New-per-day, demo clock (+N days), export/import JSON, reset; welcome, caught-up and forecast states.
   Why now: Makes the schedule demonstrable over time and the first-run experience complete.
   PRD ref: `prd.md > States and Boundaries`, `prd.md > Today view`
@@ -48,7 +48,7 @@ Build mode: fast (learner asked for autonomous execution from the brief; agent r
   Learner check: Move the demo clock 3 days ahead and watch yesterday's Easy problem come back.
   Commit: `Add settings, demo clock, backup and empty states`
 
-- [ ] **5. Optional tiered hints**
+- [x] **5. Optional tiered hints**
   Becomes usable: Metadata topic hint always; with `OPENAI_API_KEY`, Hint 1 → Hint 2 → Approach revealed one at a time and saved.
   Why now: Optional layer on top of a complete loop; must never break the no-key path.
   PRD ref: `prd.md > Tiered hints (optional AI)`
@@ -58,7 +58,7 @@ Build mode: fast (learner asked for autonomous execution from the brief; agent r
   Learner check: Open a problem with and without a key set and compare the hint panel.
   Commit: `Add optional tiered AI hints`
 
-- [ ] **6. Ship: README, CI and GitHub Pages deploy**
+- [x] **6. Ship: README, CI and GitHub Pages deploy**
   Becomes usable: Public repo with README (what/who/how/What I learned), CI running tests+build, live site on GitHub Pages.
   Why now: Required submission artifacts.
   PRD ref: `prd.md > What We're Building`
@@ -70,23 +70,27 @@ Build mode: fast (learner asked for autonomous execution from the brief; agent r
 
 ## Hands-on Checkpoints
 
-- [ ] Early usable behavior explored — after slice 2 (import + Today)
-- [ ] Final kick-the-tires exploration and feedback completed
+- [x] Early usable behavior explored — after slice 2 (import + Today): agent-driven browser run imported chokudai (231 struggles) + tourist (572); found AtCoder metadata CORS failure and Today showing only Codeforces → fixed (snapshot fallback, judge interleaving).
+- [x] Final kick-the-tires exploration and feedback completed (agent-run, autonomous mode): Today/rate/reload, import, library filters/search, drawer note, demo clock +3d, export→reset→import round-trip, invalid backup error, hints off + mock-LLM hints on, 390px mobile layout.
 
 ## Final Review
 
-- [ ] Final review complete — feedback resolved and learner confirms ready to ship
+- [x] Final review complete — feedback resolved; learner asked for autonomous build-and-ship from the brief
 
 ## Code Tour and App Map
 
-- [ ] Learning activity complete — guided route, focused alternative, prior practice connected, or brief recap
-- [ ] Optional edit and transfer reflection addressed — offered/declined/already covered/not applicable as appropriate
-- [ ] `devpost/app-map.html` generated from finished code, checked, and shown, including a project-grounded practice to reuse
+- [x] Learning activity complete — guided route, focused alternative, prior practice connected, or brief recap
+- [x] Optional edit and transfer reflection addressed — offered/declined/already covered/not applicable as appropriate
+- [x] `devpost/app-map.html` generated from finished code, checked, and shown, including a project-grounded practice to reuse
 
-Activity and evidence:
-Route and stops:
-Edit outcome:
-Reflection:
-Activity mode:
+Activity and evidence: brief evidence-based recap (autonomous mode, no interactive tour) — the CORS finding in Build-time Notes of spec.md and its fix in `src/lib/importers/atcoder.ts` `loadMeta`.
+Route and stops: reference route in app-map.html (not toured interactively): ReviewRow rate → store reducer `review` → `srs.ts` `review`.
+Edit outcome: not applicable (autonomous build).
+Reflection: not offered (autonomous build).
+Activity mode: recap
 
 ## Revisions
+
+- Slices 3–5 landed in one commit; slice 5 endpoint is `server/hintPlugin.ts` (spec said `hintApi.ts`), client is `src/lib/hints.ts`.
+- Added build-time AtCoder metadata snapshot after the browser CORS failure (see spec Build-time Notes).
+- Import preselects and queues problems round-robin across judges so day one mixes AtCoder and Codeforces.

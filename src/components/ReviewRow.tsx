@@ -34,7 +34,7 @@ export function ReviewRow({ problem, today, onRate, onOpen }: Props) {
         <div className="review-meta">
           <StruggleStatus struggle={problem.struggle} />
           <VerdictChips struggle={problem.struggle} />
-          {problem.difficulty != null && <span className="mono">{problem.judge === 'codeforces' ? '★' : 'diff'} {problem.difficulty}</span>}
+          {problem.difficulty != null && <span className="mono">★ {problem.difficulty}</span>}
           {problem.history.length === 0 ? <span>new</span> : <span>review #{problem.history.length + 1}</span>}
           {overdue > 0 && <span className="overdue">overdue {overdue}d</span>}
         </div>

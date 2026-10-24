@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Review Loop — App Map</title>
+<style>body{font:15px/1.6 system-ui,sans-serif;background:#0b1020;color:#e6e9f2;max-width:860px;margin:0 auto;padding:28px}h1{margin:0}h2{margin-top:28px;color:#a99dff}code{background:#18213a;padding:1px 6px;border-radius:5px}.muted{color:#8b95b0}li{margin:6px 0}svg text{font:13px system-ui;fill:#e6e9f2}</style></head>
+<body>
+<h1>Review Loop — App Map</h1>
+<p class="muted">Snapshot of commit <code>7361094</code>+ (may drift as the code changes).</p>
+<h2>What it is</h2>
+<p>A browser-only spaced-repetition coach for competitive programmers. Four views (Today, Library, Import, Settings) and a problem drawer read and write one reducer-backed state saved in <code>localStorage</code>. Importers call the public AtCoder Problems and Codeforces APIs; an optional Vite middleware proxies AI hints when <code>OPENAI_API_KEY</code> is set.</p>
+<h2>One action: rating a review</h2>
+<svg viewBox="0 0 820 130" width="100%" role="img" aria-label="Rate flow diagram">
+<defs><marker id="a" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8z" fill="#4fd1c5"/></marker></defs>
+<g fill="#18213a" stroke="#24304f"><rect x="5" y="30" width="170" height="60" rx="10"/><rect x="215" y="30" width="180" height="60" rx="10"/><rect x="435" y="30" width="170" height="60" rx="10"/><rect x="645" y="30" width="170" height="60" rx="10"/></g>
+<text x="20" y="55">Click Easy/Hard/Failed</text><text x="20" y="75" class="muted">ReviewRow.tsx</text>
+<text x="230" y="55">dispatch 'review'</text><text x="230" y="75">store.ts reducer</text>
+<text x="450" y="55">review(card, rating)</text><text x="450" y="75">srs.ts</text>
+<text x="660" y="55">localStorage + Today</text><text x="660" y="75">re-renders, toast</text>
+<g stroke="#4fd1c5" stroke-width="2" marker-end="url(#a)"><line x1="175" y1="60" x2="212" y2="60"/><line x1="395" y1="60" x2="432" y2="60"/><line x1="605" y1="60" x2="642" y2="60"/></g>
+</svg>
+<h2>Reference route (not toured interactively)</h2>
+<ol>
+<li><code>src/components/ReviewRow.tsx</code> — the rating buttons show <code>previewIntervals(problem.card)</code> and call <code>onRate</code>; <code>TodayView.tsx</code> <code>rate()</code> dispatches and shows the toast.</li>
+<li><code>src/lib/store.ts</code> — <code>reducer</code>, <code>case 'review'</code>: updates the card, appends history and the review log; <code>usePersistentStore</code> writes to <code>review-loop/v1</code>.</li>
+<li><code>src/lib/srs.ts</code> — <code>review()</code>, <code>nextInterval()</code>, <code>nextEase()</code>: the SM-2-style maths, covered by <code>tests/srs.test.ts</code>.</li>
+</ol>
+<h2>To change this, start here</h2>
+<ul>
+<li>Intervals / ease: <code>src/lib/srs.ts</code> (then run <code>npm test</code>).</li>
+<li>What counts as a struggle: <code>src/lib/importers/struggles.ts</code> <code>detectStruggles</code>.</li>
+<li>New judge URL format: <code>src/lib/urlParse.ts</code> <code>parseProblemUrl</code> + <code>Judge</code> in <code>types.ts</code>.</li>
+<li>Hint prompts: <code>server/hintPlugin.ts</code> <code>LEVELS</code>.</li>
+<li>Look and feel: CSS variables at the top of <code>src/styles.css</code>.</li>
+</ul>
+<h2>A practice to reuse</h2>
+<p>Verify external APIs from the real runtime, not only with curl. The AtCoder metadata looked CORS-enabled with curl but was blocked in Chrome; the browser run during slice 2 caught it, and the fix (build-time snapshot + fallbacks in <code>importers/atcoder.ts</code> <code>loadMeta</code>) is recorded in <code>spec.md</code> → Build-time Notes. On any project that calls third-party APIs from a browser, make one in-browser call part of the first slice's verification.</p>
+<h2>Run it again</h2>
+<p><code>npm install &amp;&amp; npm run dev</code> → http://localhost:5173/review-loop/ · tests: <code>npm test</code> · live: https://taku629.github.io/review-loop/</p>
+</body></html>

@@ -21,7 +21,7 @@ PRD ref: `prd.md > The Core Journey`.
 4. Preview list renders candidates → **Add N** → `store.addProblems()` merges by id (`judge:key`), assigns due dates through `srs.queueNew()` (≤ N new per day), persists.
 5. Manual URL → `urlParse.ts` detects judge/key/title → `store.addProblems()` with due = today.
 6. Today → `selectDue(today)` → rows; rating → `srs.review(card, rating, today)` → new due date → persist → toast.
-7. Drawer "Get hint" → `hintsClient.ts` `POST /api/hint` → `server/hintApi.ts` → OpenAI-compatible chat completions → hint text saved on the problem.
+7. Drawer "Get hint" → `hints.ts` `POST /api/hint` → `server/hintPlugin.ts` → OpenAI-compatible chat completions → hint text saved on the problem.
 
 ## Stack
 - **Vite 7** (dev server + static build) — https://vite.dev/guide/ — fast, zero-config, and its server plugin hook hosts the optional hint endpoint.
@@ -85,7 +85,7 @@ Details, note editor, history, SVG memory curve, hints. PRD refs: `prd.md > Mist
 ### Settings (`components/SettingsView.tsx`)
 Handles, new-per-day, demo clock, export/import JSON, reset, AI status.
 
-### Hint endpoint (`server/hintApi.ts`)
+### Hint endpoint (`server/hintPlugin.ts`)
 Vite plugin (`configureServer` + `configurePreviewServer`): `GET /api/hint/status` → `{ enabled, model }`; `POST /api/hint` `{ judge, title, url, tags, note, level: 1|2|3, previous: string[] }` → `{ hint }`. Reads `OPENAI_API_KEY` from env; never exposed to client code.
 
 ## Data Model
@@ -113,11 +113,11 @@ review-loop/
 ├── index.html
 ├── package.json / tsconfig.json
 ├── vite.config.ts            # base '/review-loop/', react + hint plugins
-├── server/hintApi.ts         # optional AI hint endpoint (dev/preview only)
+├── server/hintPlugin.ts         # optional AI hint endpoint (dev/preview only)
 ├── src/
 │   ├── main.tsx, App.tsx, styles.css
 │   ├── lib/
-│   │   ├── types.ts, dates.ts, srs.ts, urlParse.ts, store.ts, hintsClient.ts
+│   │   ├── types.ts, dates.ts, srs.ts, urlParse.ts, store.ts, hints.ts
 │   │   └── importers/ atcoder.ts, codeforces.ts, struggles.ts
 │   ├── components/ Header, TodayView, ReviewRow, LibraryView, ImportView,
 │   │               ProblemDrawer, MemoryCurve, HintPanel, SettingsView, JudgeBadge, VerdictChips
@@ -151,3 +151,8 @@ review-loop/
 - Learner uncertainty addressed: can the browser call both judge APIs directly? Verified both return `access-control-allow-origin: *`, so no proxy is needed.
 - Assumptions (agent, not learner): CE excluded from struggles; new-per-day default 5; Easy first interval 3 days.
 - Open: none blocking.
+
+## Build-time Notes
+
+- AtCoder problem titles/difficulties: `kenkoooo.com/atcoder/resources/*.json` returned CORS headers to curl but were blocked in Chrome (CDN cached copies without `Access-Control-Allow-Origin`). `scripts/fetch-atcoder-meta.mjs` (npm `prebuild`) snapshots them into `public/atcoder-meta.json`; the importer tries the snapshot, then the live files, then derives titles from task IDs.
+- Live URL: https://taku629.github.io/review-loop/ · Repository: https://github.com/taku629/review-loop
