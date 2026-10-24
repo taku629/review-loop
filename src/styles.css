@@ -188,3 +188,4 @@ table.lib tr.clickable:hover td { background: #141d35; }
   .kv { grid-template-columns: repeat(2, 1fr); }
   .tab { padding: 6px 8px; }
 }
+.grid-2 > .card { margin: 0; }
