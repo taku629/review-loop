@@ -4,6 +4,8 @@
 
 Live demo: **https://taku629.github.io/review-loop/** (works fully in the browser; data stays in your localStorage)
 
+Demo video (2:06): [`demo/review-loop-demo.mp4`](demo/review-loop-demo.mp4) · also on the [v1.0 release](https://github.com/taku629/review-loop/releases/tag/v1.0) · Devpost write-up: [`devpost/submission.md`](devpost/submission.md)
+
 Review Loop pulls the problems you **failed**, or solved only after **WA / TLE / MLE / RE**, from **AtCoder** and **Codeforces**, lets you add any other problem by URL (**yukicoder, LeetCode, AOJ**, or any judge), and schedules each one on a forgetting curve. Every day, the **Today** view shows what's due across all judges in one list, linked to the original problem. After re-solving, rate it **Easy / Hard / Failed** and the next review date moves (SM-2 style).
 
 ## Who it's for
