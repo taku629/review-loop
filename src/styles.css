@@ -189,3 +189,7 @@ table.lib tr.clickable:hover td { background: #141d35; }
   .tab { padding: 6px 8px; }
 }
 .grid-2 > .card { margin: 0; }
+.rate-easy { color: var(--easy); }
+.rate-hard { color: var(--hard); }
+.rate-failed { color: var(--failed); }
+td.overdue { font-size: 14px; }

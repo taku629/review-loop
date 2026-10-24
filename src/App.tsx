@@ -1,5 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Header, type Tab } from './components/Header';
+import { LibraryView } from './components/LibraryView';
+import { ProblemDrawer } from './components/ProblemDrawer';
+import { SettingsView } from './components/SettingsView';
+import { useHintsEnabled } from './lib/hints';
 import { ImportView } from './components/ImportView';
 import { TodayView } from './components/TodayView';
 import { StoreContext, usePersistentStore } from './lib/store';
@@ -12,7 +16,9 @@ const tabFromHash = (): Tab => {
 
 export default function App() {
   const store = usePersistentStore();
+  const hintsEnabled = useHintsEnabled();
   const [tab, setTabState] = useState<Tab>(tabFromHash);
+  const [openId, setOpenId] = useState<string | null>(null);
   const [demoRequest, setDemoRequest] = useState(0);
   const [toast, setToast] = useState<string | null>(null);
   const timer = useRef<number | undefined>(undefined);
@@ -39,10 +45,12 @@ export default function App() {
     <StoreContext.Provider value={store}>
       <Header tab={tab} onTab={setTab} />
       <main>
-        {tab === 'today' && <TodayView onOpen={() => {}} onToast={showToast} onGo={setTab} onDemo={() => { setDemoRequest((n) => n + 1); setTab('import'); }} />}
+        {tab === 'today' && <TodayView onOpen={setOpenId} onToast={showToast} onGo={setTab} onDemo={() => { setDemoRequest((n) => n + 1); setTab('import'); }} />}
         {tab === 'import' && <ImportView onToast={showToast} onDone={() => setTab('today')} demoRequest={demoRequest} onDemoConsumed={() => setDemoRequest(0)} />}
-        {(tab === 'library' || tab === 'settings') && <div className="card muted">Coming soon.</div>}
+        {tab === 'library' && <LibraryView onOpen={setOpenId} onGo={() => setTab('import')} />}
+        {tab === 'settings' && <SettingsView onToast={showToast} hintsEnabled={hintsEnabled} />}
       </main>
+      {openId && <ProblemDrawer key={openId} id={openId} onClose={() => setOpenId(null)} onToast={showToast} hintsEnabled={hintsEnabled} />}
       {toast && <div className="toast" role="status">{toast}</div>}
     </StoreContext.Provider>
   );
