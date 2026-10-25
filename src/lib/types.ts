@@ -44,6 +44,7 @@ export interface Settings {
   codeforces: string;
   newPerDay: number;
   clockOffset: number;
+  demoTour?: boolean;
 }
 
 export interface AppState {
