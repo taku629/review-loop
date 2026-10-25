@@ -1,3 +1,4 @@
+import { useT } from '../lib/i18n';
 import type { Struggle } from '../lib/types';
 
 const KNOWN = new Set(['WA', 'TLE', 'MLE', 'OLE', 'RE']);
@@ -17,10 +18,11 @@ export function VerdictChips({ struggle }: { struggle?: Struggle }) {
 }
 
 export function StruggleStatus({ struggle }: { struggle?: Struggle }) {
+  const t = useT();
   if (!struggle) return null;
   return struggle.solved ? (
-    <span className="status status-solved">AC after {struggle.failures + 1} tries</span>
+    <span className="status status-solved">{t('AC after {n} tries', { n: struggle.failures + 1 })}</span>
   ) : (
-    <span className="status status-unsolved">Unsolved</span>
+    <span className="status status-unsolved">{t('Unsolved')}</span>
   );
 }

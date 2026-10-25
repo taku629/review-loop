@@ -217,3 +217,8 @@ td.overdue { font-size: 14px; }
 }
 
 .warn-text { color: #f5b942; }
+.lang-toggle { flex: none; }
+@media (max-width: 720px) {
+  .lang-toggle { order: 1; margin-left: auto; }
+  .tabs { order: 2; }
+}

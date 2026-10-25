@@ -4,7 +4,9 @@ import { LibraryView } from './components/LibraryView';
 import { ProblemDrawer } from './components/ProblemDrawer';
 import { SettingsView } from './components/SettingsView';
 import { demoPicks, DEMO_HANDLES, loadDemoSnapshot } from './lib/demo';
+import { setDateLang } from './lib/dates';
 import { useHintsEnabled } from './lib/hints';
+import { translate } from './lib/i18n';
 import { SAMPLE_DRAFTS } from './lib/importers/sample';
 import { ImportView } from './components/ImportView';
 import { TodayView } from './components/TodayView';
@@ -18,6 +20,11 @@ const tabFromHash = (): Tab => {
 
 export default function App() {
   const store = usePersistentStore();
+  const lang = store.state.settings.lang ?? 'en';
+  setDateLang(lang);
+  useEffect(() => {
+    document.documentElement.lang = lang;
+  }, [lang]);
   const hintsEnabled = useHintsEnabled();
   const [tab, setTabState] = useState<Tab>(tabFromHash);
   const [openId, setOpenId] = useState<string | null>(null);
@@ -49,14 +56,14 @@ export default function App() {
       const snap = await loadDemoSnapshot();
       const picks = demoPicks(snap);
       dispatch({ type: 'add', drafts: picks, today });
-      showToast(`Loaded ${picks.length} real struggles of chokudai / tourist (captured ${snap.capturedAt}) · rate one below`);
+      showToast(translate(lang, 'Loaded {n} real struggles of chokudai / tourist (captured {date}) · rate one below', { n: picks.length, date: snap.capturedAt }));
     } catch {
       dispatch({ type: 'add', drafts: SAMPLE_DRAFTS, today });
-      showToast('Demo data could not be loaded — showing offline sample problems instead');
+      showToast(translate(lang, 'Demo data could not be loaded — showing offline sample problems instead'));
     }
     dispatch({ type: 'settings', patch: { ...DEMO_HANDLES, demoTour: true } });
     setTab('today');
-  }, [dispatch, today, showToast, setTab]);
+  }, [dispatch, today, showToast, setTab, lang]);
 
   return (
     <StoreContext.Provider value={store}>

@@ -1,3 +1,4 @@
+import { useT } from '../lib/i18n';
 import { useEffect, useState } from 'react';
 import { formatShort, relativeDays } from '../lib/dates';
 import { formatInterval } from '../lib/srs';
@@ -14,6 +15,7 @@ export function ProblemDrawer({ id, onClose, onToast, hintsEnabled }: { id: stri
   const p = state.problems[id];
   const [note, setNote] = useState(p?.note ?? '');
   const [showTags, setShowTags] = useState(false);
+  const t = useT();
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
@@ -25,13 +27,13 @@ export function ProblemDrawer({ id, onClose, onToast, hintsEnabled }: { id: stri
   const saveNote = () => {
     if (note !== p.note) {
       dispatch({ type: 'note', id, note });
-      onToast('Mistake note saved');
+      onToast(t('Mistake note saved'));
     }
   };
   const remove = () => {
-    if (window.confirm(`Remove “${p.title}” from your loop? Its review history will be deleted.`)) {
+    if (window.confirm(t('Remove “{title}” from your loop? Its review history will be deleted.', { title: p.title }))) {
       dispatch({ type: 'remove', id });
-      onToast(`Removed ${p.title}`);
+      onToast(t('Removed {title}', { title: p.title }));
       onClose();
     }
   };
@@ -43,8 +45,8 @@ export function ProblemDrawer({ id, onClose, onToast, hintsEnabled }: { id: stri
         <div className="row" style={{ justifyContent: 'space-between' }}>
           <div className="row">
             <JudgeBadge judge={p.judge} />
-            {p.source === 'sample' && <span className="tag">sample</span>}
-            {p.source === 'manual' && <span className="tag">added by URL</span>}
+            {p.source === 'sample' && <span className="tag">{t('sample')}</span>}
+            {p.source === 'manual' && <span className="tag">{t('added by URL')}</span>}
           </div>
           <button className="btn btn-ghost btn-sm" onClick={onClose} aria-label="Close">✕</button>
         </div>
@@ -55,67 +57,67 @@ export function ProblemDrawer({ id, onClose, onToast, hintsEnabled }: { id: stri
           <h2>{p.title}</h2>
         )}
         <div className="row" style={{ marginTop: 8 }}>
-          <a className="btn btn-primary btn-sm" href={p.url} target="_blank" rel="noreferrer">Open on judge ↗</a>
+          <a className="btn btn-primary btn-sm" href={p.url} target="_blank" rel="noreferrer">{t('Open on judge ↗')}</a>
           {p.struggle && <StruggleStatus struggle={p.struggle} />}
           {p.struggle && <VerdictChips struggle={p.struggle} />}
           {p.difficulty !== undefined && <span className="faint mono">★ {p.difficulty}</span>}
         </div>
 
         <section>
-          <h3>Schedule</h3>
+          <h3>{t('Schedule')}</h3>
           <div className="kv">
-            <div>Next review<b>{p.card.due <= today ? 'Today' : formatShort(p.card.due)}</b>{p.card.due > today && relativeDays(p.card.due, today)}</div>
-            <div>Interval<b>{p.card.reps ? formatInterval(p.card.interval) : 'new'}</b></div>
-            <div>Ease<b>{p.card.ease.toFixed(2)}</b></div>
-            <div>Lapses<b>{p.card.lapses}</b></div>
+            <div>{t('Next review')}<b>{p.card.due <= today ? t('Today') : formatShort(p.card.due)}</b>{p.card.due > today && relativeDays(p.card.due, today)}</div>
+            <div>{t('Interval')}<b>{p.card.reps ? formatInterval(p.card.interval) : t('new')}</b></div>
+            <div>{t('Ease')}<b>{p.card.ease.toFixed(2)}</b></div>
+            <div>{t('Lapses')}<b>{p.card.lapses}</b></div>
           </div>
         </section>
 
         <section>
-          <h3>Memory curve</h3>
+          <h3>{t('Memory curve')}</h3>
           {p.history.length > 0 ? (
             <>
               <MemoryCurve problem={p} today={today} />
-              <p className="hint-text">Estimated recall. Reviews (dots) reset it; the next review lands before it drops below ~90%.</p>
+              <p className="hint-text">{t('Estimated recall. Reviews (dots) reset it; the next review lands before it drops below ~90%.')}</p>
             </>
           ) : (
-            <p className="muted" style={{ margin: 0 }}>Your curve starts after the first review.</p>
+            <p className="muted" style={{ margin: 0 }}>{t('Your curve starts after the first review.')}</p>
           )}
         </section>
 
         <section>
-          <h3>Mistake note</h3>
+          <h3>{t('Mistake note')}</h3>
           <textarea className="input" value={note} onChange={(e) => setNote(e.target.value)} onBlur={saveNote} rows={3}
-            placeholder="What went wrong? e.g. overflow in a*b, off-by-one on the last index, missed the n=1 case…" aria-label="Mistake note" />
+            placeholder={t('What went wrong? e.g. overflow in a*b, off-by-one on the last index, missed the n=1 case…')} aria-label="Mistake note" />
         </section>
 
         {p.tags && p.tags.length > 0 && (
           <section>
-            <h3>Topic hint</h3>
+            <h3>{t('Topic hint')}</h3>
             {showTags ? (
               <div className="chips">{p.tags.map((t) => <span key={t} className="tag">{t}</span>)}</div>
             ) : (
-              <button className="btn btn-sm" onClick={() => setShowTags(true)}>Reveal tags (spoiler)</button>
+              <button className="btn btn-sm" onClick={() => setShowTags(true)}>{t('Reveal tags (spoiler)')}</button>
             )}
           </section>
         )}
 
         <section>
-          <h3>Tiered hints</h3>
+          <h3>{t('Tiered hints')}</h3>
           <HintPanel problem={p} enabled={hintsEnabled} />
         </section>
 
         <section>
-          <h3>Review history</h3>
+          <h3>{t('Review history')}</h3>
           {p.history.length === 0 ? (
-            <p className="muted" style={{ margin: 0 }}>Not reviewed yet{p.struggle ? ` — imported because you needed ${p.struggle.failures + (p.struggle.solved ? 1 : 0)} attempts.` : '.'}</p>
+            <p className="muted" style={{ margin: 0 }}>{t('Not reviewed yet')}{p.struggle ? t(' — imported because you needed {n} attempts.', { n: p.struggle.failures + (p.struggle.solved ? 1 : 0) }) : '.'}</p>
           ) : (
             <ul className="history">
               {[...p.history].reverse().map((h, i) => (
                 <li key={i}>
                   <span>{formatShort(h.date)}</span>
                   <span className={`rate-${h.rating}`}>{RATING_LABEL[h.rating]}</span>
-                  <span className="faint">next in {formatInterval(h.interval)}</span>
+                  <span className="faint">{t('next in {i}', { i: formatInterval(h.interval) })}</span>
                 </li>
               ))}
             </ul>
@@ -123,7 +125,7 @@ export function ProblemDrawer({ id, onClose, onToast, hintsEnabled }: { id: stri
         </section>
 
         <section>
-          <button className="btn btn-danger btn-sm" onClick={remove}>Remove from loop</button>
+          <button className="btn btn-danger btn-sm" onClick={remove}>{t('Remove from loop')}</button>
         </section>
       </aside>
     </>
