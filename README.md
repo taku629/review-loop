@@ -64,6 +64,45 @@ The `/review-loop/api/hint` endpoint is a tiny Vite dev/preview-server middlewar
 - **Deploy:** GitHub Actions runs tests + build on every push (`ci.yml`) and publishes `dist/` to GitHub Pages (`pages.yml`).
 - **Planning docs** from the Devpost *Build With AI: Basics* skill pack: [`devpost/scope.md`](devpost/scope.md), [`devpost/prd.md`](devpost/prd.md), [`devpost/spec.md`](devpost/spec.md), [`devpost/checklist.md`](devpost/checklist.md), [`devpost/app-map.html`](devpost/app-map.html).
 
+## How I built it with AI
+
+Review Loop was built with **[Devin](https://devin.ai)** (an AI software engineer) driven by the **[Devpost Learn Skill Pack](https://github.com/challengepost/learn-ai-basics)** (`npx skills add challengepost/learn-ai-basics --all -y`), starting from an empty folder.
+
+**Flow: scope → PRD → spec → build → ship → polish**
+
+1. **1-start** — learner profile ([`devpost/learner-profile.md`](devpost/learner-profile.md)). The skills interview the builder; Devin answered from my written product brief.
+2. **2-scope → [`scope.md`](devpost/scope.md)** — one loop only: import struggles → schedule → review today. Accounts, sync, scraping and automatic re-solve detection were cut.
+3. **3-prd → [`prd.md`](devpost/prd.md)** — the core journey, every screen, empty/error states and the proof-of-concept boundary.
+4. **4-spec → [`spec.md`](devpost/spec.md)** — stack, data model, API contracts, the SM-2 formula, file layout, deploy target.
+5. **5-build** — six vertical slices from [`checklist.md`](devpost/checklist.md), each tested and committed (scheduler + Today → imports → library/drawer → settings/demo clock → optional AI hints → CI/Pages).
+6. **6-ship** — README, GitHub Pages, a scripted demo video and the [Devpost write-up](devpost/submission.md).
+7. **Polish** — one PR per item, each passing `npm test` + `npm run build` in CI and checked on the live site after merge: [demo AI hints](https://github.com/taku629/review-loop/pull/1), [one-click demo tour](https://github.com/taku629/review-loop/pull/2), [README media](https://github.com/taku629/review-loop/pull/3), [error handling + cached fallback](https://github.com/taku629/review-loop/pull/4), [375px layout](https://github.com/taku629/review-loop/pull/5), [Japanese UI](https://github.com/taku629/review-loop/pull/6).
+
+**What the AI did**
+- Turned the brief into the scope/PRD/spec drafts and followed them.
+- Wrote all of the code, unit tests (Vitest), CI and Pages workflows.
+- Checked the real APIs (CORS, rate limits, odd responses such as AtCoder Problems returning `[]` for unknown users) and designed the fallbacks.
+- Wrote the ✦ demo hints (Hint 1 → Hint 2 → Approach for 20 demo problems).
+- Translated the UI into Japanese.
+- Made the demo video by scripting the live site with Playwright, with edge-tts narration and captions.
+- Verified each change in a real browser, including on the deployed site.
+
+**What I decided**
+- **The problem and the user.** Student competitive programmers who practise on several judges and forget mistakes they already paid for. The product had to be cross-judge, not one more single-judge tracker.
+- **The product rules.**
+  - A "struggle" means WA/TLE before AC, or never solved.
+  - Easy / Hard / Failed ratings drive an SM-2 style schedule.
+  - Problems from any judge can be added by URL.
+  - Data stays in the browser; no accounts.
+- **The AI boundary.** AI hints are optional and the app must work fully without a key. The key never reaches the browser. On the keyless public site, hints are pre-generated and clearly labelled as such.
+- **Hard constraints.** Free hosting, real public demo users (`chokudai`, `tourist`), and planning docs committed to the repo.
+- **How work lands.**
+  - Priorities for the polish round.
+  - One item per PR.
+  - Tests and build must pass, and `main` must never break.
+  - Every change is checked on the live site.
+  - Which PRs got merged.
+
 ## What I learned
 
 - **Writing scope → PRD → spec before code paid off.** Cutting accounts, scraping and auto-detecting re-solves in `scope.md` kept the build to one coherent loop that could be finished and polished.
