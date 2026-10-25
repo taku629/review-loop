@@ -3,6 +3,8 @@ import { formatInterval, review } from '../lib/srs';
 import { useDemoHints } from '../lib/hints';
 import { selectDue, useStore } from '../lib/store';
 import type { Rating } from '../lib/types';
+import { useState } from 'react';
+import { DemoTour } from './DemoTour';
 import { LoopMark } from './Logo';
 import { ReviewRow } from './ReviewRow';
 
@@ -10,12 +12,13 @@ interface Props {
   onOpen: (id: string) => void;
   onToast: (msg: string) => void;
   onGo: (tab: 'import') => void;
-  onDemo: () => void;
+  onDemo: () => Promise<void>;
 }
 
 export function TodayView({ onOpen, onToast, onGo, onDemo }: Props) {
   const { state, dispatch, today } = useStore();
   const demoHints = useDemoHints();
+  const [loadingDemo, setLoadingDemo] = useState(false);
   const all = Object.values(state.problems);
   const due = selectDue(state, today);
   const reviewedToday = state.reviewLog.filter((r) => r.date === today).length;
@@ -32,7 +35,16 @@ export function TodayView({ onOpen, onToast, onGo, onDemo }: Props) {
         </p>
         <div className="row" style={{ justifyContent: 'center' }}>
           <button className="btn btn-primary" onClick={() => onGo('import')}>Import my struggles</button>
-          <button className="btn" onClick={onDemo}>Try with demo handles (chokudai / tourist)</button>
+          <button
+            className="btn"
+            disabled={loadingDemo}
+            onClick={() => {
+              setLoadingDemo(true);
+              void onDemo().finally(() => setLoadingDemo(false));
+            }}
+          >
+            {loadingDemo ? 'Loading demo…' : 'Try with demo handles (chokudai / tourist)'}
+          </button>
         </div>
         <div className="steps">
           <div className="step"><b>1 · Import</b>Your AtCoder & Codeforces handles, or paste any problem URL (yukicoder, LeetCode, AOJ…).</div>
@@ -75,6 +87,8 @@ export function TodayView({ onOpen, onToast, onGo, onDemo }: Props) {
           <div className="progress"><span style={{ width: `${total ? (reviewedToday / total) * 100 : 0}%` }} /></div>
         </div>
       </div>
+
+      {state.settings.demoTour && <DemoTour onOpen={onOpen} onToast={onToast} />}
 
       {due.length > 0 ? (
         <ul className="review-list" style={{ listStyle: 'none', padding: 0, margin: 0 }}>

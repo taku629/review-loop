@@ -3,7 +3,9 @@ import { Header, type Tab } from './components/Header';
 import { LibraryView } from './components/LibraryView';
 import { ProblemDrawer } from './components/ProblemDrawer';
 import { SettingsView } from './components/SettingsView';
+import { demoPicks, DEMO_HANDLES, loadDemoSnapshot } from './lib/demo';
 import { useHintsEnabled } from './lib/hints';
+import { SAMPLE_DRAFTS } from './lib/importers/sample';
 import { ImportView } from './components/ImportView';
 import { TodayView } from './components/TodayView';
 import { StoreContext, usePersistentStore } from './lib/store';
@@ -41,11 +43,26 @@ export default function App() {
     timer.current = window.setTimeout(() => setToast(null), 3200);
   }, []);
 
+  const { dispatch, today } = store;
+  const runDemo = useCallback(async () => {
+    try {
+      const snap = await loadDemoSnapshot();
+      const picks = demoPicks(snap);
+      dispatch({ type: 'add', drafts: picks, today });
+      showToast(`Loaded ${picks.length} real struggles of chokudai / tourist (captured ${snap.capturedAt}) · rate one below`);
+    } catch {
+      dispatch({ type: 'add', drafts: SAMPLE_DRAFTS, today });
+      showToast('Demo data could not be loaded — showing offline sample problems instead');
+    }
+    dispatch({ type: 'settings', patch: { ...DEMO_HANDLES, demoTour: true } });
+    setTab('today');
+  }, [dispatch, today, showToast, setTab]);
+
   return (
     <StoreContext.Provider value={store}>
       <Header tab={tab} onTab={setTab} />
       <main>
-        {tab === 'today' && <TodayView onOpen={setOpenId} onToast={showToast} onGo={setTab} onDemo={() => { setDemoRequest((n) => n + 1); setTab('import'); }} />}
+        {tab === 'today' && <TodayView onOpen={setOpenId} onToast={showToast} onGo={setTab} onDemo={runDemo} />}
         {tab === 'import' && <ImportView onToast={showToast} onDone={() => setTab('today')} demoRequest={demoRequest} onDemoConsumed={() => setDemoRequest(0)} />}
         {tab === 'library' && <LibraryView onOpen={setOpenId} onGo={() => setTab('import')} />}
         {tab === 'settings' && <SettingsView onToast={showToast} hintsEnabled={hintsEnabled} />}
