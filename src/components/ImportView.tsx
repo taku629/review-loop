@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { importAtCoder } from '../lib/importers/atcoder';
 import { importCodeforces } from '../lib/importers/codeforces';
+import { DEMO_HANDLES, loadDemoSnapshot } from '../lib/demo';
+import { ImportError } from '../lib/importers/errors';
 import { SAMPLE_DRAFTS } from '../lib/importers/sample';
 import { useDemoHints } from '../lib/hints';
 import { useStore } from '../lib/store';
@@ -9,7 +11,7 @@ import { JudgeBadge } from './JudgeBadge';
 import { ManualAdd } from './ManualAdd';
 import { StruggleStatus, VerdictChips } from './VerdictChips';
 
-type Status = { state: 'idle' | 'loading' | 'done' | 'error'; msg: string };
+type Status = { state: 'idle' | 'loading' | 'done' | 'cached' | 'error'; msg: string; kind?: string };
 const IDLE: Status = { state: 'idle', msg: '' };
 const DEFAULT_PICK = 15;
 
@@ -53,7 +55,7 @@ export function ImportView({ onToast, onDone, demoRequest, onDemoConsumed }: Pro
     abort.current = ctl;
     setDrafts(null);
     dispatch({ type: 'settings', patch: { atcoder: acHandle.trim(), codeforces: cfHandle.trim() } });
-    const job = async (handle: string, set: (s: Status) => void, fn: typeof importAtCoder) => {
+    const job = async (judge: 'atcoder' | 'codeforces', handle: string, set: (s: Status) => void, fn: typeof importAtCoder) => {
       if (!handle.trim()) {
         set(IDLE);
         return [] as ProblemDraft[];
@@ -65,11 +67,22 @@ export function ImportView({ onToast, onDone, demoRequest, onDemoConsumed }: Pro
         return list;
       } catch (e) {
         if (ctl.signal.aborted) return [];
-        set({ state: 'error', msg: e instanceof Error ? e.message : String(e) });
+        const msg = e instanceof Error ? e.message : String(e);
+        const kind = e instanceof ImportError ? e.kind : 'server';
+        if (handle.trim().toLowerCase() === DEMO_HANDLES[judge] && kind !== 'invalid') {
+          try {
+            const snap = await loadDemoSnapshot();
+            set({ state: 'cached', msg: `${snap[judge].length} struggles from the cached demo snapshot (${snap.capturedAt}) — live API failed: ${msg}` });
+            return snap[judge];
+          } catch {
+            /* fall through to the error */
+          }
+        }
+        set({ state: 'error', msg, kind });
         return [];
       }
     };
-    const [a, c] = await Promise.all([job(acHandle, setAcStatus, importAtCoder), job(cfHandle, setCfStatus, importCodeforces)]);
+    const [a, c] = await Promise.all([job('atcoder', acHandle, setAcStatus, importAtCoder), job('codeforces', cfHandle, setCfStatus, importCodeforces)]);
     if (ctl.signal.aborted) return;
     const merged = [...a, ...c].sort((x, y) => (y.struggle?.lastAt ?? 0) - (x.struggle?.lastAt ?? 0));
     if (merged.length) showPreview(merged);
@@ -108,8 +121,8 @@ export function ImportView({ onToast, onDone, demoRequest, onDemoConsumed }: Pro
 
   const line = (label: string, s: Status) =>
     s.state !== 'idle' && (
-      <div className={s.state === 'error' ? 'error' : s.state === 'done' ? '' : 'muted'}>
-        <b>{label}</b> · {s.state === 'loading' ? '⏳ ' : s.state === 'done' ? '✓ ' : '⚠ '}
+      <div className={s.state === 'error' ? 'error' : s.state === 'cached' ? 'warn-text' : s.state === 'done' ? '' : 'muted'}>
+        <b>{label}</b> · {s.state === 'loading' ? '⏳ ' : s.state === 'done' ? '✓ ' : s.state === 'cached' ? '↺ ' : '⚠ '}
         {s.msg}
       </div>
     );
@@ -143,7 +156,7 @@ export function ImportView({ onToast, onDone, demoRequest, onDemoConsumed }: Pro
           <div className="progress-lines" aria-live="polite">
             {line('AtCoder', acStatus)}
             {line('Codeforces', cfStatus)}
-            {(acStatus.state === 'error' || cfStatus.state === 'error') && !busy && (
+            {[acStatus, cfStatus].some((s) => s.state === 'error' && s.kind !== 'invalid' && s.kind !== 'not-found') && !busy && (
               <button type="button" className="btn btn-sm" style={{ alignSelf: 'flex-start' }} onClick={() => showPreview(SAMPLE_DRAFTS)}>
                 API unavailable? Load offline sample problems
               </button>

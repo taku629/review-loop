@@ -1,5 +1,6 @@
 import type { ProblemDraft } from '../types';
 import { atcoderTitle } from '../urlParse';
+import { checkHandle, fetchApi, httpError, ImportError } from './errors';
 import { detectStruggles, normalizeAtCoder } from './struggles';
 
 const API = 'https://kenkoooo.com/atcoder/atcoder-api/v3/user/submissions';
@@ -25,8 +26,8 @@ interface AcModel {
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 async function getJson<T>(url: string, signal?: AbortSignal): Promise<T> {
-  const res = await fetch(url, { signal });
-  if (!res.ok) throw new Error(`AtCoder Problems API returned HTTP ${res.status}`);
+  const res = await fetchApi('AtCoder Problems API', url, signal);
+  if (!res.ok) throw httpError('AtCoder Problems API', res.status);
   return res.json() as Promise<T>;
 }
 
@@ -63,6 +64,7 @@ async function loadMeta(signal?: AbortSignal): Promise<Map<string, Meta>> {
 }
 
 export async function importAtCoder(handle: string, onProgress: (msg: string) => void, signal?: AbortSignal): Promise<ProblemDraft[]> {
+  checkHandle('AtCoder', handle);
   const user = encodeURIComponent(handle.trim());
   const subs: AcSubmission[] = [];
   let from = 0;
@@ -74,7 +76,8 @@ export async function importAtCoder(handle: string, onProgress: (msg: string) =>
     from = batch[batch.length - 1].epoch_second + 1;
     await sleep(1000); // AtCoder Problems asks clients to wait ≥1s between calls
   }
-  if (subs.length === 0) throw new Error(`No AtCoder submissions found for “${handle}”.`);
+  if (subs.length === 0)
+    throw new ImportError('not-found', `No AtCoder submissions found for “${handle.trim()}”. Check the spelling — AtCoder Problems only knows users who have submitted at least once.`);
   onProgress(`AtCoder: ${subs.length} submissions · loading problem titles…`);
   const meta = await loadMeta(signal);
   const contestOf = new Map(subs.map((s) => [s.problem_id, s.contest_id]));
