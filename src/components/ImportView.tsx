@@ -1,3 +1,4 @@
+import { plural, useLang, useT } from '../lib/i18n';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { importAtCoder } from '../lib/importers/atcoder';
 import { importCodeforces } from '../lib/importers/codeforces';
@@ -41,6 +42,8 @@ export function ImportView({ onToast, onDone, demoRequest, onDemoConsumed }: Pro
   const [picked, setPicked] = useState<Set<string>>(new Set());
   const abort = useRef<AbortController | null>(null);
   const demoHints = useDemoHints();
+  const t = useT();
+  const lang = useLang();
   const busy = acStatus.state === 'loading' || cfStatus.state === 'loading';
 
   const showPreview = (list: ProblemDraft[]) => {
@@ -60,19 +63,20 @@ export function ImportView({ onToast, onDone, demoRequest, onDemoConsumed }: Pro
         set(IDLE);
         return [] as ProblemDraft[];
       }
-      set({ state: 'loading', msg: 'Starting…' });
+      set({ state: 'loading', msg: t('Starting…') });
       try {
         const list = await fn(handle, (msg) => set({ state: 'loading', msg }), ctl.signal);
-        set({ state: 'done', msg: `${list.length} struggle${list.length === 1 ? '' : 's'} found` });
+        set({ state: 'done', msg: t('{n} {struggles} found', { n: list.length, struggles: plural(list.length, 'struggle') }) });
         return list;
       } catch (e) {
         if (ctl.signal.aborted) return [];
-        const msg = e instanceof Error ? e.message : String(e);
+        const raw = e instanceof Error ? e.message : String(e);
         const kind = e instanceof ImportError ? e.kind : 'server';
+        const msg = lang === 'ja' ? t(`import.${kind}`, { judge: judge === 'atcoder' ? 'AtCoder' : 'Codeforces', handle: handle.trim(), msg: raw }) : raw;
         if (handle.trim().toLowerCase() === DEMO_HANDLES[judge] && kind !== 'invalid') {
           try {
             const snap = await loadDemoSnapshot();
-            set({ state: 'cached', msg: `${snap[judge].length} struggles from the cached demo snapshot (${snap.capturedAt}) — live API failed: ${msg}` });
+            set({ state: 'cached', msg: t('{n} struggles from the cached demo snapshot ({date}) — live API failed: {msg}', { n: snap[judge].length, date: snap.capturedAt, msg }) });
             return snap[judge];
           } catch {
             /* fall through to the error */
@@ -114,7 +118,7 @@ export function ImportView({ onToast, onDone, demoRequest, onDemoConsumed }: Pro
     const chosen = interleave(drafts.filter((d) => picked.has(problemId(d.judge, d.key))));
     dispatch({ type: 'add', drafts: chosen, today });
     const per = state.settings.newPerDay;
-    onToast(`Added ${chosen.length} problems · up to ${per} new per day are scheduled, starting today`);
+    onToast(t('Added {n} problems · up to {per} new per day are scheduled, starting today', { n: chosen.length, per }));
     setDrafts(null);
     onDone();
   };
@@ -131,34 +135,34 @@ export function ImportView({ onToast, onDone, demoRequest, onDemoConsumed }: Pro
     <>
       <div className="page-head">
         <div>
-          <h1>Import</h1>
-          <p>Pull problems you failed — or only solved after WA/TLE — from your judges. Nothing is stored except in this browser.</p>
+          <h1>{t('Import')}</h1>
+          <p>{t('Pull problems you failed — or only solved after WA/TLE — from your judges. Nothing is stored except in this browser.')}</p>
         </div>
       </div>
       <div className="grid-2">
         <form className="card stack" onSubmit={(e) => { e.preventDefault(); void run(ac, cf); }}>
           <div>
-            <h2>From your handles</h2>
-            <p className="hint-text" style={{ margin: 0 }}>Public data via AtCoder Problems (kenkoooo) and the Codeforces API.</p>
+            <h2>{t('From your handles')}</h2>
+            <p className="hint-text" style={{ margin: 0 }}>{t('Public data via AtCoder Problems (kenkoooo) and the Codeforces API.')}</p>
           </div>
           <label className="field">
-            AtCoder handle
+            {t('AtCoder handle')}
             <input className="input" value={ac} onChange={(e) => setAc(e.target.value)} placeholder="chokudai" aria-label="AtCoder handle" />
           </label>
           <label className="field">
-            Codeforces handle
+            {t('Codeforces handle')}
             <input className="input" value={cf} onChange={(e) => setCf(e.target.value)} placeholder="tourist" aria-label="Codeforces handle" />
           </label>
           <div className="row">
-            <button className="btn btn-primary" disabled={busy || (!ac.trim() && !cf.trim())}>{busy ? 'Importing…' : 'Find my struggles'}</button>
-            <button type="button" className="btn btn-ghost" disabled={busy} onClick={() => { setAc('chokudai'); setCf('tourist'); }}>Use demo handles</button>
+            <button className="btn btn-primary" disabled={busy || (!ac.trim() && !cf.trim())}>{busy ? t('Importing…') : t('Find my struggles')}</button>
+            <button type="button" className="btn btn-ghost" disabled={busy} onClick={() => { setAc('chokudai'); setCf('tourist'); }}>{t('Use demo handles')}</button>
           </div>
           <div className="progress-lines" aria-live="polite">
             {line('AtCoder', acStatus)}
             {line('Codeforces', cfStatus)}
             {[acStatus, cfStatus].some((s) => s.state === 'error' && s.kind !== 'invalid' && s.kind !== 'not-found') && !busy && (
               <button type="button" className="btn btn-sm" style={{ alignSelf: 'flex-start' }} onClick={() => showPreview(SAMPLE_DRAFTS)}>
-                API unavailable? Load offline sample problems
+                {t('API unavailable? Load offline sample problems')}
               </button>
             )}
           </div>
@@ -170,12 +174,12 @@ export function ImportView({ onToast, onDone, demoRequest, onDemoConsumed }: Pro
         <div className="preview card" style={{ padding: 0 }}>
           <div className="preview-head">
             <div>
-              <b>{drafts.length} struggles found</b> <span className="muted">· {freshCount} new · {picked.size} selected</span>
+              <b>{t('{n} struggles found', { n: drafts.length })}</b> <span className="muted">{t('· {fresh} new · {sel} selected', { fresh: freshCount, sel: picked.size })}</span>
             </div>
             <div className="row">
-              <button className="btn btn-sm btn-ghost" onClick={() => setPicked(new Set(drafts.filter((d) => !state.problems[problemId(d.judge, d.key)]).map((d) => problemId(d.judge, d.key))))}>Select all new</button>
-              <button className="btn btn-sm btn-ghost" onClick={() => setPicked(new Set())}>Clear</button>
-              <button className="btn btn-sm btn-primary" disabled={picked.size === 0} onClick={add}>Add {picked.size} to my loop</button>
+              <button className="btn btn-sm btn-ghost" onClick={() => setPicked(new Set(drafts.filter((d) => !state.problems[problemId(d.judge, d.key)]).map((d) => problemId(d.judge, d.key))))}>{t('Select all new')}</button>
+              <button className="btn btn-sm btn-ghost" onClick={() => setPicked(new Set())}>{t('Clear')}</button>
+              <button className="btn btn-sm btn-primary" disabled={picked.size === 0} onClick={add}>{t('Add {n} to my loop', { n: picked.size })}</button>
             </div>
           </div>
           <div className="preview-list">
@@ -188,9 +192,9 @@ export function ImportView({ onToast, onDone, demoRequest, onDemoConsumed }: Pro
                   <JudgeBadge judge={d.judge} />
                   <span className="title">
                     {d.title}
-                    {d.source === 'sample' && <span className="tag">sample</span>}
-                    {tracked && <span className="tag">already tracked</span>}
-                    {demoHints[id] && <span className="tag tag-hint" title="Pre-generated AI demo hints">✦ hints</span>}
+                    {d.source === 'sample' && <span className="tag">{t('sample')}</span>}
+                    {tracked && <span className="tag">{t('already tracked')}</span>}
+                    {demoHints[id] && <span className="tag tag-hint" title={t('Pre-generated AI demo hints')}>{t('✦ hints')}</span>}
                   </span>
                   <span className="row" style={{ justifyContent: 'flex-end' }}>
                     {d.struggle && <StruggleStatus struggle={d.struggle} />}

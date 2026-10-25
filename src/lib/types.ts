@@ -39,12 +39,15 @@ export interface Problem {
   addedAt: string;
 }
 
+export type Lang = 'en' | 'ja';
+
 export interface Settings {
   atcoder: string;
   codeforces: string;
   newPerDay: number;
   clockOffset: number;
   demoTour?: boolean;
+  lang?: Lang;
 }
 
 export interface AppState {

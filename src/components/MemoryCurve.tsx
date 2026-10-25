@@ -1,3 +1,4 @@
+import { useT } from '../lib/i18n';
 import { addDays, diffDays, formatShort } from '../lib/dates';
 import { retention } from '../lib/srs';
 import type { Problem } from '../lib/types';
@@ -8,6 +9,7 @@ const PAD = { l: 34, r: 10, t: 12, b: 24 };
 
 /** Estimated recall since the problem was added: each review resets memory to 100%, then it decays along that interval's curve. */
 export function MemoryCurve({ problem, today }: { problem: Problem; today: string }) {
+  const t = useT();
   const start = problem.history[0]?.date ?? problem.addedAt;
   const end = addDays(problem.card.due > today ? problem.card.due : today, 2);
   const span = Math.max(4, diffDays(end, start));
@@ -50,11 +52,11 @@ export function MemoryCurve({ problem, today }: { problem: Problem; today: strin
       {todayX >= PAD.l && todayX <= W - PAD.r && (
         <g>
           <line x1={todayX} x2={todayX} y1={PAD.t} y2={H - PAD.b} stroke="#4fd1c5" />
-          <text x={todayX + 3} y={H - 8} fill="#4fd1c5" fontSize="10">today</text>
+          <text x={todayX + 3} y={H - 8} fill="#4fd1c5" fontSize="10">{t('today')}</text>
         </g>
       )}
       <line x1={x(problem.card.due)} x2={x(problem.card.due)} y1={PAD.t} y2={H - PAD.b} stroke="#e6e9f2" strokeDasharray="2 3" opacity="0.6" />
-      <text x={Math.min(x(problem.card.due) + 3, W - 70)} y={y(0.5) - 6} fill="#8b95b0" fontSize="10">next {formatShort(problem.card.due)}</text>
+      <text x={Math.min(x(problem.card.due) + 3, W - 70)} y={y(0.5) - 6} fill="#8b95b0" fontSize="10">{t('next {date}', { date: formatShort(problem.card.due) })}</text>
     </svg>
   );
 }

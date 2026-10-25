@@ -1,3 +1,4 @@
+import { plural, useT } from '../lib/i18n';
 import { useDemoHints } from '../lib/hints';
 import { useMemo, useState } from 'react';
 import { formatShort, relativeDays } from '../lib/dates';
@@ -11,6 +12,7 @@ type Filter = 'all' | 'due' | 'unsolved' | 'new';
 
 export function LibraryView({ onOpen, onGo }: { onOpen: (id: string) => void; onGo: () => void }) {
   const demoHints = useDemoHints();
+  const t = useT();
   const { state, today } = useStore();
   const [judge, setJudge] = useState<Judge | 'all'>('all');
   const [filter, setFilter] = useState<Filter>('all');
@@ -29,9 +31,9 @@ export function LibraryView({ onOpen, onGo }: { onOpen: (id: string) => void; on
   if (all.length === 0) {
     return (
       <div className="card caught-up">
-        <h2>Your library is empty</h2>
-        <p className="muted">Import from AtCoder / Codeforces or add a problem by URL.</p>
-        <button className="btn btn-primary" onClick={onGo}>Go to Import</button>
+        <h2>{t('Your library is empty')}</h2>
+        <p className="muted">{t('Import from AtCoder / Codeforces or add a problem by URL.')}</p>
+        <button className="btn btn-primary" onClick={onGo}>{t('Go to Import')}</button>
       </div>
     );
   }
@@ -40,27 +42,27 @@ export function LibraryView({ onOpen, onGo }: { onOpen: (id: string) => void; on
     <>
       <div className="page-head">
         <div>
-          <h1>Library</h1>
-          <p>Every problem in your loop, across {judges.length} judge{judges.length === 1 ? '' : 's'}. Click a row for notes, history and the memory curve.</p>
+          <h1>{t('Library')}</h1>
+          <p>{t('Every problem in your loop, across {j} {judges}. Click a row for notes, history and the memory curve.', { j: judges.length, judges: plural(judges.length, 'judge') })}</p>
         </div>
       </div>
       <div className="toolbar">
-        <input className="input" style={{ maxWidth: 240 }} value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search title or note…" aria-label="Search" />
-        <button className="filter-chip" aria-pressed={judge === 'all'} onClick={() => setJudge('all')}>All judges</button>
+        <input className="input" style={{ maxWidth: 240 }} value={q} onChange={(e) => setQ(e.target.value)} placeholder={t('Search title or note…')} aria-label="Search" />
+        <button className="filter-chip" aria-pressed={judge === 'all'} onClick={() => setJudge('all')}>{t('All judges')}</button>
         {judges.map((j) => (
           <button key={j} className="filter-chip" aria-pressed={judge === j} onClick={() => setJudge(j)}>{JUDGE_LABEL[j]}</button>
         ))}
         <span className="faint">|</span>
         {(['all', 'due', 'unsolved', 'new'] as Filter[]).map((f) => (
           <button key={f} className="filter-chip" aria-pressed={filter === f} onClick={() => setFilter(f)}>
-            {f === 'all' ? 'Any status' : f === 'due' ? 'Due' : f === 'unsolved' ? 'Never solved' : 'Not reviewed'}
+            {t(f === 'all' ? 'Any status' : f === 'due' ? 'Due' : f === 'unsolved' ? 'Never solved' : 'Not reviewed')}
           </button>
         ))}
       </div>
       <div className="card lib-wrap" style={{ padding: 6 }}>
         <table className="lib">
           <thead>
-            <tr><th>Judge</th><th>Problem</th><th>Struggle</th><th>Next review</th><th>Interval</th><th>Reviews</th></tr>
+            <tr>{['Judge', 'Problem', 'Struggle', 'Next review', 'Interval', 'Reviews'].map((h) => <th key={h}>{t(h)}</th>)}</tr>
           </thead>
           <tbody>
             {rows.map((p) => (
@@ -68,18 +70,18 @@ export function LibraryView({ onOpen, onGo }: { onOpen: (id: string) => void; on
                 <td><JudgeBadge judge={p.judge} /></td>
                 <td>
                   {p.title}
-                  {demoHints[p.id] && <> <span className="tag tag-hint" title="Pre-generated AI demo hints">✦ hints</span></>}
-                  {p.note && <div className="faint" style={{ fontSize: 12 }}>Note: {p.note}</div>}
+                  {demoHints[p.id] && <> <span className="tag tag-hint" title={t('Pre-generated AI demo hints')}>{t('✦ hints')}</span></>}
+                  {p.note && <div className="faint" style={{ fontSize: 12 }}>{t('Note: {note}', { note: p.note })}</div>}
                 </td>
-                <td>{p.struggle ? <StruggleStatus struggle={p.struggle} /> : <span className="faint">manual</span>}</td>
-                <td className={p.card.due < today ? 'overdue' : ''}>{p.card.due <= today ? 'Today' : `${formatShort(p.card.due)} · ${relativeDays(p.card.due, today)}`}</td>
+                <td>{p.struggle ? <StruggleStatus struggle={p.struggle} /> : <span className="faint">{t('manual')}</span>}</td>
+                <td className={p.card.due < today ? 'overdue' : ''}>{p.card.due <= today ? t('Today') : `${formatShort(p.card.due)} · ${relativeDays(p.card.due, today)}`}</td>
                 <td className="mono">{p.card.reps ? formatInterval(p.card.interval) : '—'}</td>
                 <td className="mono">{p.history.length}</td>
               </tr>
             ))}
           </tbody>
         </table>
-        {rows.length === 0 && <p className="muted" style={{ padding: 14 }}>No problems match these filters.</p>}
+        {rows.length === 0 && <p className="muted" style={{ padding: 14 }}>{t('No problems match these filters.')}</p>}
       </div>
     </>
   );
