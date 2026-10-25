@@ -253,3 +253,19 @@ td.overdue { font-size: 14px; }
   .tab { font-size: 14px; padding: 6px 6px; white-space: nowrap; }
   .bar-row { grid-template-columns: 84px 1fr auto; gap: 8px; }
 }
+
+/* ---------- consistency ---------- */
+.heatmap { display: flex; gap: 3px; overflow-x: auto; padding-bottom: 2px; }
+.hm-col { display: flex; flex-direction: column; gap: 3px; }
+.hm { display: inline-block; flex: none; width: 12px; height: 12px; border-radius: 3px; background: #1a2340; }
+.hm-out { background: transparent; }
+.hm-1 { background: rgba(124, 108, 255, 0.35); }
+.hm-2 { background: rgba(124, 108, 255, 0.55); }
+.hm-3 { background: rgba(124, 108, 255, 0.8); }
+.hm-4 { background: var(--accent); }
+.hm-today { outline: 1px solid var(--accent-2); outline-offset: 1px; }
+.hm-legend { gap: 4px; }
+.sub-h { font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin: 4px 0 0; font-weight: 600; }
+.forecast-mini { margin-top: 0; }
+.streak-pill { margin-top: 8px; font-size: 13px; font-weight: 600; color: #fbbf24; }
+@media (max-width: 720px) { .hm { width: 10px; height: 10px; } .heatmap, .hm-col { gap: 2px; } }
