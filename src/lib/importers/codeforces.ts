@@ -1,4 +1,5 @@
 import type { ProblemDraft } from '../types';
+import { checkHandle, codeforcesError, fetchApi, ImportError } from './errors';
 import { detectStruggles, normalizeCodeforces } from './struggles';
 
 interface CfSubmission {
@@ -8,13 +9,14 @@ interface CfSubmission {
 }
 
 export async function importCodeforces(handle: string, onProgress: (msg: string) => void, signal?: AbortSignal): Promise<ProblemDraft[]> {
+  checkHandle('Codeforces', handle);
   onProgress('Codeforces: fetching submissions…');
-  const res = await fetch(`https://codeforces.com/api/user.status?handle=${encodeURIComponent(handle.trim())}&from=1&count=10000`, { signal });
+  const url = `https://codeforces.com/api/user.status?handle=${encodeURIComponent(handle.trim())}&from=1&count=10000`;
+  const res = await fetchApi('Codeforces API', url, signal);
   const body = (await res.json().catch(() => null)) as { status: string; comment?: string; result?: CfSubmission[] } | null;
-  if (!body) throw new Error(`Codeforces API returned HTTP ${res.status}`);
-  if (body.status !== 'OK' || !body.result) throw new Error(body.comment ?? 'Codeforces API error');
+  if (!body || body.status !== 'OK' || !body.result) throw codeforcesError(handle, res.status, body?.comment);
   const subs = body.result.filter((s) => s.problem.contestId !== undefined);
-  if (subs.length === 0) throw new Error(`No Codeforces submissions found for “${handle}”.`);
+  if (subs.length === 0) throw new ImportError('not-found', `“${handle.trim()}” has no Codeforces submissions yet.`);
   onProgress(`Codeforces: ${subs.length} submissions · finding struggles…`);
   const meta = new Map<string, CfSubmission['problem']>();
   const norm = subs.map((s) => {

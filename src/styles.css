@@ -204,3 +204,5 @@ td.overdue { font-size: 14px; }
 .demo-steps .num { flex: none; width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; font-size: 12px; font-weight: 700; border: 1px solid var(--accent); color: var(--accent); }
 .demo-steps li.done .num { background: var(--accent); color: #fff; }
 @media (max-width: 760px) { .demo-steps { grid-template-columns: 1fr; } }
+
+.warn-text { color: #f5b942; }
