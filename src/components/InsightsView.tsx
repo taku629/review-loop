@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { useT } from '../lib/i18n';
 import { computeInsights, type Bucket } from '../lib/insights';
 import { useStore } from '../lib/store';
+import { ActivityCard } from './ActivityCard';
 import { JudgeBadge } from './JudgeBadge';
 
 const pct = (x: number | null) => (x == null ? '—' : `${Math.round(x * 100)}%`);
@@ -103,6 +104,8 @@ export function InsightsView({ onOpen, onGo }: { onOpen: (id: string) => void; o
           </ol>
         )}
       </section>
+
+      <ActivityCard />
 
       <div className="grid-2" style={{ marginTop: 16 }}>
         <section className="card stack">

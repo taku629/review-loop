@@ -1,3 +1,4 @@
+import { computeActivity } from '../lib/activity';
 import { addDays, formatDayOfMonth, formatShort, formatWeekday, relativeDays } from '../lib/dates';
 import { plural, useLang, useT } from '../lib/i18n';
 import { formatInterval, review } from '../lib/srs';
@@ -27,6 +28,7 @@ export function TodayView({ onOpen, onToast, onGo, onDemo }: Props) {
   const reviewedToday = state.reviewLog.filter((r) => r.date === today).length;
   const total = reviewedToday + due.length;
   const judgeCount = new Set(due.map((p) => p.judge)).size;
+  const streak = computeActivity(state, today).current;
 
   if (all.length === 0) {
     return (
@@ -95,6 +97,7 @@ export function TodayView({ onOpen, onToast, onGo, onDemo }: Props) {
         <div style={{ minWidth: 220 }}>
           <div className="hint-text">{t('{done} / {total} reviewed today', { done: reviewedToday, total })}</div>
           <div className="progress"><span style={{ width: `${total ? (reviewedToday / total) * 100 : 0}%` }} /></div>
+          {streak > 0 && <div className="streak-pill">🔥 {t('{n}-day streak', { n: streak })}</div>}
         </div>
       </div>
 
