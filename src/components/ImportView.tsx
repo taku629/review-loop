@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { importAtCoder } from '../lib/importers/atcoder';
 import { importCodeforces } from '../lib/importers/codeforces';
 import { SAMPLE_DRAFTS } from '../lib/importers/sample';
+import { useDemoHints } from '../lib/hints';
 import { useStore } from '../lib/store';
 import { problemId, type ProblemDraft } from '../lib/types';
 import { JudgeBadge } from './JudgeBadge';
@@ -37,6 +38,7 @@ export function ImportView({ onToast, onDone, demoRequest, onDemoConsumed }: Pro
   const [drafts, setDrafts] = useState<ProblemDraft[] | null>(null);
   const [picked, setPicked] = useState<Set<string>>(new Set());
   const abort = useRef<AbortController | null>(null);
+  const demoHints = useDemoHints();
   const busy = acStatus.state === 'loading' || cfStatus.state === 'loading';
 
   const showPreview = (list: ProblemDraft[]) => {
@@ -175,6 +177,7 @@ export function ImportView({ onToast, onDone, demoRequest, onDemoConsumed }: Pro
                     {d.title}
                     {d.source === 'sample' && <span className="tag">sample</span>}
                     {tracked && <span className="tag">already tracked</span>}
+                    {demoHints[id] && <span className="tag tag-hint" title="Pre-generated AI demo hints">✦ hints</span>}
                   </span>
                   <span className="row" style={{ justifyContent: 'flex-end' }}>
                     {d.struggle && <StruggleStatus struggle={d.struggle} />}

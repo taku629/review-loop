@@ -1,5 +1,6 @@
 import { addDays, formatShort, formatWeekday, relativeDays } from '../lib/dates';
 import { formatInterval, review } from '../lib/srs';
+import { useDemoHints } from '../lib/hints';
 import { selectDue, useStore } from '../lib/store';
 import type { Rating } from '../lib/types';
 import { LoopMark } from './Logo';
@@ -14,6 +15,7 @@ interface Props {
 
 export function TodayView({ onOpen, onToast, onGo, onDemo }: Props) {
   const { state, dispatch, today } = useStore();
+  const demoHints = useDemoHints();
   const all = Object.values(state.problems);
   const due = selectDue(state, today);
   const reviewedToday = state.reviewLog.filter((r) => r.date === today).length;
@@ -77,7 +79,7 @@ export function TodayView({ onOpen, onToast, onGo, onDemo }: Props) {
       {due.length > 0 ? (
         <ul className="review-list" style={{ listStyle: 'none', padding: 0, margin: 0 }}>
           {due.map((p) => (
-            <ReviewRow key={p.id + p.history.length} problem={p} today={today} onOpen={() => onOpen(p.id)} onRate={(r) => rate(p.id, p.title, r)} />
+            <ReviewRow key={p.id + p.history.length} problem={p} hasDemoHints={!!demoHints[p.id]} today={today} onOpen={() => onOpen(p.id)} onRate={(r) => rate(p.id, p.title, r)} />
           ))}
         </ul>
       ) : (

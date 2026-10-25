@@ -193,3 +193,6 @@ table.lib tr.clickable:hover td { background: #141d35; }
 .rate-hard { color: var(--hard); }
 .rate-failed { color: var(--failed); }
 td.overdue { font-size: 14px; }
+.demo-note { font-size: 13px; color: var(--muted); background: rgba(124, 92, 255, 0.08); border: 1px dashed var(--border); border-radius: 10px; padding: 8px 12px; }
+.demo-note b { color: var(--accent); }
+.tag-hint { color: var(--accent); border-color: var(--accent); }

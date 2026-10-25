@@ -26,3 +26,32 @@ export async function requestHint(p: Problem, level: number): Promise<string> {
 }
 
 export const HINT_LABELS = ['Hint 1', 'Hint 2', 'Approach'];
+
+export interface DemoHint {
+  title: string;
+  url: string;
+  levels: string[];
+}
+
+let demoCache: Promise<Record<string, DemoHint>> | null = null;
+
+export function loadDemoHints(): Promise<Record<string, DemoHint>> {
+  demoCache ??= fetch(`${base}demo-hints.json`)
+    .then((r) => (r.ok ? r.json() : { hints: {} }))
+    .then((d: { hints?: Record<string, DemoHint> }) => d.hints ?? {})
+    .catch(() => ({}));
+  return demoCache;
+}
+
+/** Pre-generated hints shipped with the static build so the public demo can show the tiered-hint flow without an API key. */
+export function useDemoHints(): Record<string, DemoHint> {
+  const [hints, setHints] = useState<Record<string, DemoHint>>({});
+  useEffect(() => {
+    let alive = true;
+    void loadDemoHints().then((h) => alive && setHints(h));
+    return () => {
+      alive = false;
+    };
+  }, []);
+  return hints;
+}
