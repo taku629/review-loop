@@ -1,5 +1,6 @@
 import { selectDue, useStore } from '../lib/store';
 import { useLang, useT } from '../lib/i18n';
+import { useOnline } from '../lib/pwa';
 import { LoopMark } from './Logo';
 
 export type Tab = 'today' | 'library' | 'insights' | 'import' | 'settings';
@@ -15,6 +16,7 @@ export function Header({ tab, onTab }: { tab: Tab; onTab: (t: Tab) => void }) {
   const { state, dispatch, today } = useStore();
   const tr = useT();
   const lang = useLang();
+  const online = useOnline();
   const due = selectDue(state, today).length;
   const reviewed = state.reviewLog.filter((r) => r.date === today).length;
   const tracked = Object.keys(state.problems).length;
@@ -32,6 +34,7 @@ export function Header({ tab, onTab }: { tab: Tab; onTab: (t: Tab) => void }) {
             </button>
           ))}
         </nav>
+        {!online && <span className="offline-pill" role="status">{tr('Offline — your loop still works')}</span>}
         <div className="stats">
           {state.settings.clockOffset !== 0 && <span className="clock-pill">{tr('Demo clock +{n}d · {today}', { n: state.settings.clockOffset, today })}</span>}
           <span><b>{reviewed}</b> {tr('reviewed today')}</span>
