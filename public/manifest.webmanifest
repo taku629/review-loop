@@ -1,0 +1,17 @@
+{
+  "name": "Review Loop — never repeat a contest mistake",
+  "short_name": "Review Loop",
+  "description": "Spaced-repetition review of your competitive programming mistakes across AtCoder, Codeforces and any judge.",
+  "id": "/review-loop/",
+  "start_url": "/review-loop/",
+  "scope": "/review-loop/",
+  "display": "standalone",
+  "background_color": "#0b1020",
+  "theme_color": "#0b1020",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
+    { "src": "icons/icon.svg", "sizes": "any", "type": "image/svg+xml" }
+  ]
+}

@@ -1,4 +1,5 @@
 import { useT } from '../lib/i18n';
+import { useInstall } from '../lib/pwa';
 import { useDemoHints } from '../lib/hints';
 import { useRef, useState } from 'react';
 import { emptyState, useStore } from '../lib/store';
@@ -12,6 +13,7 @@ function isAppState(x: unknown): x is AppState {
 export function SettingsView({ onToast, hintsEnabled }: { onToast: (m: string) => void; hintsEnabled: boolean | null }) {
   const demoCount = Object.keys(useDemoHints()).length;
   const t = useT();
+  const install = useInstall();
   const { state, dispatch, today } = useStore();
   const s = state.settings;
   const file = useRef<HTMLInputElement>(null);
@@ -88,6 +90,18 @@ export function SettingsView({ onToast, hintsEnabled }: { onToast: (m: string) =
             <button className="btn btn-danger btn-sm" onClick={() => { if (window.confirm(t('Delete every problem, note and review? This cannot be undone.'))) { dispatch({ type: 'replace', state: emptyState() }); onToast(t('All data cleared')); } }}>
               {t('Reset all data')}
             </button>
+          </div>
+        </div>
+
+        <div className="card stack">
+          <h2>{t('Install & offline')}</h2>
+          <p className="hint-text" style={{ margin: 0 }}>{t('Review Loop is a PWA: add it to your home screen and it opens offline with your loop, notes and demo hints. Importing and syncing need a connection.')}</p>
+          <div className="row">
+            {install ? (
+              <button className="btn btn-primary" onClick={() => void install()}>{t('Install app')}</button>
+            ) : (
+              <span className="hint-text">{t('Use your browser menu: “Install app” / “Add to Home Screen”.')}</span>
+            )}
           </div>
         </div>
 
