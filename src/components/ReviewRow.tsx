@@ -9,6 +9,7 @@ import { StruggleStatus, VerdictChips } from './VerdictChips';
 interface Props {
   problem: Problem;
   hasDemoHints?: boolean;
+  selected?: boolean;
   today: string;
   onRate: (rating: Rating) => void;
   onOpen: () => void;
@@ -16,7 +17,7 @@ interface Props {
 
 const LABEL: Record<Rating, string> = { easy: 'Easy', hard: 'Hard', failed: 'Failed' };
 
-export function ReviewRow({ problem, hasDemoHints, today, onRate, onOpen }: Props) {
+export function ReviewRow({ problem, hasDemoHints, selected, today, onRate, onOpen }: Props) {
   const [leaving, setLeaving] = useState(false);
   const t = useT();
   const preview = previewIntervals(problem.card);
@@ -26,7 +27,7 @@ export function ReviewRow({ problem, hasDemoHints, today, onRate, onOpen }: Prop
     setTimeout(() => onRate(r), 220);
   };
   return (
-    <li className={`review-row${leaving ? ' leaving' : ''}`}>
+    <li className={`review-row${leaving ? ' leaving' : ''}${selected ? ' selected' : ''}`} aria-current={selected || undefined}>
       <div className="review-main" onClick={onOpen} role="button" tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && e.target === e.currentTarget && onOpen()} aria-label={`Details for ${problem.title}`}>
         <div className="review-title">
           <JudgeBadge judge={problem.judge} />

@@ -5,7 +5,8 @@ import { formatInterval, review } from '../lib/srs';
 import { useDemoHints } from '../lib/hints';
 import { selectDue, useStore } from '../lib/store';
 import type { Rating } from '../lib/types';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { shortcutFor, shouldIgnoreKeys } from '../lib/shortcuts';
 import { DemoTour } from './DemoTour';
 import { LoopMark } from './Logo';
 import { ReviewRow } from './ReviewRow';
@@ -23,6 +24,14 @@ export function TodayView({ onOpen, onToast, onGo, onDemo }: Props) {
   const [loadingDemo, setLoadingDemo] = useState(false);
   const t = useT();
   const lang = useLang();
+  const [sel, setSel] = useState(0);
+  const [kb, setKb] = useState(false);
+  const onKey = useRef<(e: KeyboardEvent) => void>(() => {});
+  useEffect(() => {
+    const h = (e: KeyboardEvent) => onKey.current(e);
+    window.addEventListener('keydown', h);
+    return () => window.removeEventListener('keydown', h);
+  }, []);
   const all = Object.values(state.problems);
   const due = selectDue(state, today);
   const reviewedToday = state.reviewLog.filter((r) => r.date === today).length;
@@ -75,6 +84,20 @@ export function TodayView({ onOpen, onToast, onGo, onDemo }: Props) {
     onToast(t('{title} → next review {rel} ({date})', { title, rel: relativeDays(next.due, today), date: formatShort(next.due) }));
   };
 
+  const selIdx = Math.min(sel, Math.max(0, due.length - 1));
+  onKey.current = (e) => {
+    const action = shortcutFor(e);
+    if (!action || due.length === 0 || shouldIgnoreKeys(e.target)) return;
+    e.preventDefault();
+    setKb(true);
+    const p = due[selIdx];
+    if (action.type === 'move') {
+      setSel(Math.max(0, Math.min(due.length - 1, selIdx + action.delta)));
+      requestAnimationFrame(() => document.querySelector('.review-row.selected')?.scrollIntoView({ block: 'nearest' }));
+    } else if (action.type === 'rate') rate(p.id, p.title, action.rating);
+    else onOpen(p.id);
+  };
+
   const forecast = Array.from({ length: 7 }, (_, i) => {
     const day = addDays(today, i + 1);
     return { day, n: all.filter((p) => p.card.due === day).length };
@@ -103,10 +126,15 @@ export function TodayView({ onOpen, onToast, onGo, onDemo }: Props) {
 
       {state.settings.demoTour && <DemoTour onOpen={onOpen} onToast={onToast} />}
 
+      {due.length > 0 && (
+        <p className="hint-text kbd-hint">
+          {t('Shortcuts:')} <kbd>J</kbd>/<kbd>K</kbd> {t('move')} · <kbd>E</kbd> <kbd>H</kbd> <kbd>F</kbd> {t('rate')} · <kbd>O</kbd> {t('open')}
+        </p>
+      )}
       {due.length > 0 ? (
         <ul className="review-list" style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-          {due.map((p) => (
-            <ReviewRow key={p.id + p.history.length} problem={p} hasDemoHints={!!demoHints[p.id]} today={today} onOpen={() => onOpen(p.id)} onRate={(r) => rate(p.id, p.title, r)} />
+          {due.map((p, i) => (
+            <ReviewRow key={p.id + p.history.length} selected={kb && i === selIdx} problem={p} hasDemoHints={!!demoHints[p.id]} today={today} onOpen={() => onOpen(p.id)} onRate={(r) => rate(p.id, p.title, r)} />
           ))}
         </ul>
       ) : (
