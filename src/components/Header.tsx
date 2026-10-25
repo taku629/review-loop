@@ -2,10 +2,11 @@ import { selectDue, useStore } from '../lib/store';
 import { useLang, useT } from '../lib/i18n';
 import { LoopMark } from './Logo';
 
-export type Tab = 'today' | 'library' | 'import' | 'settings';
+export type Tab = 'today' | 'library' | 'insights' | 'import' | 'settings';
 const TABS: { id: Tab; label: string }[] = [
   { id: 'today', label: 'Today' },
   { id: 'library', label: 'Library' },
+  { id: 'insights', label: 'Insights' },
   { id: 'import', label: 'Import' },
   { id: 'settings', label: 'Settings' },
 ];

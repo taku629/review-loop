@@ -9,10 +9,11 @@ import { useHintsEnabled } from './lib/hints';
 import { translate } from './lib/i18n';
 import { SAMPLE_DRAFTS } from './lib/importers/sample';
 import { ImportView } from './components/ImportView';
+import { InsightsView } from './components/InsightsView';
 import { TodayView } from './components/TodayView';
 import { StoreContext, usePersistentStore } from './lib/store';
 
-const TAB_IDS: Tab[] = ['today', 'library', 'import', 'settings'];
+const TAB_IDS: Tab[] = ['today', 'library', 'insights', 'import', 'settings'];
 const tabFromHash = (): Tab => {
   const h = window.location.hash.replace('#', '') as Tab;
   return TAB_IDS.includes(h) ? h : 'today';
@@ -72,6 +73,7 @@ export default function App() {
         {tab === 'today' && <TodayView onOpen={setOpenId} onToast={showToast} onGo={setTab} onDemo={runDemo} />}
         {tab === 'import' && <ImportView onToast={showToast} onDone={() => setTab('today')} demoRequest={demoRequest} onDemoConsumed={() => setDemoRequest(0)} />}
         {tab === 'library' && <LibraryView onOpen={setOpenId} onGo={() => setTab('import')} />}
+        {tab === 'insights' && <InsightsView onOpen={setOpenId} onGo={() => setTab('import')} />}
         {tab === 'settings' && <SettingsView onToast={showToast} hintsEnabled={hintsEnabled} />}
       </main>
       {openId && <ProblemDrawer key={openId} id={openId} onClose={() => setOpenId(null)} onToast={showToast} hintsEnabled={hintsEnabled} />}

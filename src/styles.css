@@ -222,3 +222,34 @@ td.overdue { font-size: 14px; }
   .lang-toggle { order: 1; margin-left: auto; }
   .tabs { order: 2; }
 }
+
+/* ---------- insights ---------- */
+.weak-card { border-color: rgba(248, 81, 73, 0.35); }
+.weak-list { list-style: none; margin: 12px 0 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.weak-list li { display: flex; gap: 12px; align-items: flex-start; background: #0d1428; border: 1px solid var(--border); border-radius: 10px; padding: 12px; }
+.weak-rank { flex: none; width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; font-weight: 700; color: #fff; background: var(--failed); }
+.weak-list li:nth-child(2) .weak-rank { background: var(--hard); }
+.weak-list li:nth-child(3) .weak-rank { background: var(--accent); }
+.weak-body { flex: 1; min-width: 0; }
+.weak-probs { margin-top: 8px; gap: 6px; }
+.weak-probs .btn { max-width: 100%; min-width: 0; justify-content: flex-start; }
+.weak-probs .btn .ellipsis { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+.weak-probs .btn .badge, .weak-probs .btn > :first-child { flex: none; }
+.kv-3 { grid-template-columns: repeat(3, 1fr); }
+.split { display: flex; height: 12px; border-radius: 999px; overflow: hidden; background: var(--surface-2); }
+.split-easy { background: var(--easy); }
+.split-hard { background: var(--hard); }
+.split-failed { background: var(--failed); }
+.bars { display: flex; flex-direction: column; gap: 6px; }
+.bar-row { display: grid; grid-template-columns: minmax(80px, 140px) 1fr auto; gap: 10px; align-items: center; font-size: 13px; }
+.bar-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--muted); }
+.bar { height: 10px; background: var(--surface-2); border-radius: 999px; overflow: hidden; }
+.bar-fill { display: flex; justify-content: flex-end; height: 100%; background: var(--accent); border-radius: 999px; overflow: hidden; }
+.bar-bad { display: block; height: 100%; background: var(--failed); }
+.bar-val { font-size: 12px; min-width: 64px; text-align: right; }
+@media (max-width: 720px) {
+  .tabs { max-width: 100%; overflow-x: auto; scrollbar-width: none; }
+  .tabs { gap: 0; }
+  .tab { font-size: 14px; padding: 6px 6px; white-space: nowrap; }
+  .bar-row { grid-template-columns: 84px 1fr auto; gap: 8px; }
+}
