@@ -84,7 +84,7 @@ export function TodayView({ onOpen, onToast, onGo, onDemo }: Props) {
     <>
       <div className="page-head">
         <div>
-          <h1>Today</h1>
+          <h1>{t('Today')}</h1>
           <p>
             {due.length > 0
               ? t('{n} {problems} to review across {j} {judges}.', { n: due.length, problems: plural(due.length, 'problem'), j: judgeCount, judges: plural(judgeCount, 'judge') })
