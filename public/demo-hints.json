@@ -1,187 +1,367 @@
 {
- "note": "Pre-generated demo hints for the public GitHub Pages demo. Written by an AI coding agent (Devin) from the problem statements; no live LLM call and no API key in the browser.",
- "generatedBy": "Devin (AI)",
- "generatedAt": "2026-10-24",
- "hints": {
-  "atcoder:abc172_c": {
-   "title": "ABC172 C. Tsundoku",
-   "url": "https://atcoder.jp/contests/abc172/tasks/abc172_c",
-   "levels": [
-    "You always read a prefix of desk A and a prefix of desk B. Once you fix how many books you take from A, what is the best you can do on B?",
-    "Prefix sums + two pointers (or binary search). As the number of books taken from A grows, the longest affordable prefix of B can only shrink, so a single pointer moving backwards is enough. Classic WA: forgetting the case of taking 0 books from A.",
-    "1. Build prefix sums SA[0..N] and SB[0..M] in 64-bit.\n2. j = M. For i = 0..N: if SA[i] > K stop; while SB[j] > K − SA[i], decrement j; ans = max(ans, i + j).\n3. Print ans. O(N + M)."
-   ]
-  },
-  "atcoder:abc175_c": {
-   "title": "ABC175 C. Walking Takahashi",
-   "url": "https://atcoder.jp/contests/abc175/tasks/abc175_c",
-   "levels": [
-    "Values go up to 10^15, so simulating every move is impossible. Walking toward 0 is clearly right until you would overshoot — what do the remaining moves do after that?",
-    "Work with |X|. Take q = min(K, |X| / D) steps toward zero. If moves remain, you can only bounce between r = |X| − qD and r − D, so only the parity of the remaining moves matters.",
-    "1. X = |X|.\n2. q = min(K, X / D); X −= q·D; K −= q.\n3. If K is even print X, else print D − X.\nNever compute K·D directly — it overflows 64-bit. O(1)."
-   ]
-  },
-  "atcoder:abc194_e": {
-   "title": "ABC194 E. Mex Min",
-   "url": "https://atcoder.jp/contests/abc194/tasks/abc194_e",
-   "levels": [
-    "The minimum mex over all windows is some value x that is missing from at least one window. When is a value x missing from some window of length M?",
-    "x is absent from some length-M window exactly when two consecutive occurrences of x (counting virtual positions −1 and N) leave a gap of at least M cells. The answer is the smallest such x.",
-    "1. For every value record its positions; add sentinels −1 and N.\n2. x qualifies if some gap next − prev − 1 ≥ M.\n3. Print the smallest qualifying x in 0..N. O(N).\n(Alternative: slide the window keeping counts and a set of missing values.)"
-   ]
-  },
-  "atcoder:abc187_d": {
-   "title": "ABC187 D. Choose Me",
-   "url": "https://atcoder.jp/contests/abc187/tasks/abc187_d",
-   "levels": [
-    "Start from the state where you give no speeches. How much does the vote difference change when you speak in one town — and does it depend on the other towns?",
-    "A speech in town i changes (Takahashi − Aoki) by 2·A_i + B_i, independently of every other town. So greedily take the towns with the largest 2·A_i + B_i.",
-    "1. diff = −ΣA_i.\n2. Sort towns by 2·A_i + B_i descending.\n3. Add values one by one, counting, until diff > 0 (strictly). Use 64-bit. O(N log N)."
-   ]
-  },
-  "atcoder:abc121_d": {
-   "title": "ABC121 D. XOR World",
-   "url": "https://atcoder.jp/contests/abc121/tasks/abc121_d",
-   "levels": [
-    "Like range sums, a range XOR can be built from two prefix values. Write out 0 ⊕ 1 ⊕ … ⊕ n for small n — do you see a pattern?",
-    "g(n) = 0 ⊕ 1 ⊕ … ⊕ n depends only on n mod 4: it is n, 1, n + 1, 0. Then the answer is g(B) ⊕ g(A − 1).",
-    "1. g(n): n%4 == 0 → n, 1 → 1, 2 → n + 1, 3 → 0; define g(−1) = 0.\n2. Print g(B) ^ g(A − 1). Watch the A = 0 case. O(1)."
-   ]
-  },
-  "atcoder:abc136_e": {
-   "title": "ABC136 E. Max GCD",
-   "url": "https://atcoder.jp/contests/abc136/tasks/abc136_e",
-   "levels": [
-    "The operation never changes the total sum S. What does that tell you about any number that divides every element at the end?",
-    "Any answer d must divide S, and S has only about a thousand divisors — try them all. For a fixed d, each element is rounded down or up to a multiple of d; the cheapest plan rounds the largest residues up and the smallest down.",
-    "1. Enumerate divisors of S in O(√S).\n2. For each d: r_i = A_i mod d, sorted ascending; t = Σr_i / d elements must be rounded up (the t largest). Cost = sum of the N − t smallest residues.\n3. The largest d with cost ≤ K is the answer. O(√S + D·N log N)."
-   ]
-  },
-  "atcoder:abc131_d": {
-   "title": "ABC131 D. Megalomania",
-   "url": "https://atcoder.jp/contests/abc131/tasks/abc131_d",
-   "levels": [
-    "If finishing everything is possible, does the order matter? Try swapping two adjacent jobs whose deadlines are out of order.",
-    "Earliest-deadline-first is optimal (exchange argument). Sort by deadline and check that every prefix finishes in time.",
-    "Sort by B ascending; t = 0; for each job: t += A; if t > B print No. Otherwise print Yes.\nCommon WA: sorting by A instead of B. O(N log N)."
-   ]
-  },
-  "atcoder:dp_f": {
-   "title": "DP F. LCS",
-   "url": "https://atcoder.jp/contests/dp/tasks/dp_f",
-   "levels": [
-    "Computing the length is the classic part; this task asks you to print an actual string. Which information in the table tells you which move you made?",
-    "Standard LCS DP over prefixes, then reconstruct by walking backwards from the bottom-right corner, moving to a neighbour with the same value, or taking the character when you must move diagonally.",
-    "1. dp[i][j] = dp[i−1][j−1] + 1 if s[i−1] == t[j−1], else max(dp[i−1][j], dp[i][j−1]).\n2. From (|s|, |t|): if dp[i][j] == dp[i−1][j] → i−−; else if dp[i][j] == dp[i][j−1] → j−−; else take s[i−1], i−−, j−−.\n3. Reverse the collected characters. O(|s|·|t|). Storing strings inside the DP is the usual TLE/MLE."
-   ]
-  },
-  "atcoder:abc128_c": {
-   "title": "ABC128 C. Switches",
-   "url": "https://atcoder.jp/contests/abc128/tasks/abc128_c",
-   "levels": [
-    "Look at the constraints first: N ≤ 10. How many on/off combinations of switches exist in total?",
-    "Bit brute force: there are only 2^N ≤ 1024 states. For each one, check every bulb's parity condition.",
-    "for mask in 0..2^N − 1: for each bulb, count the switches s in its list with bit (s − 1) set; the state is valid if count % 2 == p_i for every bulb → ans++.\nCommon WA: off-by-one on the 1-indexed switch numbers. O(2^N · N · M)."
-   ]
-  },
-  "atcoder:abc146_c": {
-   "title": "ABC146 C. Buy an Integer",
-   "url": "https://atcoder.jp/contests/abc146/tasks/abc146_c",
-   "levels": [
-    "If you can afford the integer N, can you also afford every smaller integer? Use that monotonicity.",
-    "The price A·N + B·d(N) only increases with N, so binary search the largest affordable N in [0, 10^9].",
-    "lo = 0, hi = 10^9 + 1. While hi − lo > 1: mid = (lo + hi) / 2; if A·mid + B·digits(mid) ≤ X then lo = mid else hi = mid. Print lo.\nThe shop sells nothing above 10^9 — exceeding that cap is the usual WA. Use 64-bit. O(log 10^9)."
-   ]
-  },
-  "atcoder:arc096_a": {
-   "title": "ABC095 C. Half and Half",
-   "url": "https://atcoder.jp/contests/abc095/tasks/arc096_a",
-   "levels": [
-    "Two AB-pizzas can replace one A-pizza and one B-pizza. How many AB-pizzas could it ever make sense to buy?",
-    "Try every even number 2k of AB-pizzas for k = 0 .. max(X, Y) and buy the rest individually. Buying more AB-pizzas than you strictly need can be optimal when C is cheap.",
-    "ans = min over k in [0, max(X, Y)] of 2k·C + max(0, X − k)·A + max(0, Y − k)·B. O(max(X, Y))."
-   ]
-  },
-  "atcoder:abc085_d": {
-   "title": "ABC085 D. Katana Thrower",
-   "url": "https://atcoder.jp/contests/abc085/tasks/abc085_d",
-   "levels": [
-    "You only ever need to wield one katana — which one? And when is a single throw better than wielding?",
-    "Let amax = max a_i. Throw every katana with b_i > amax, largest first, until the monster dies; then wield the best katana for the remaining damage.",
-    "1. amax = max a.\n2. Sort b descending; for each b > amax: H −= b, cnt++; if H ≤ 0 print cnt.\n3. Otherwise print cnt + ceil(H / amax). O(N log N)."
-   ]
-  },
-  "codeforces:1934A": {
-   "title": "1934A · Too Min Too Max",
-   "url": "https://codeforces.com/contest/1934/problem/A",
-   "levels": [
-    "The four chosen indices form a cycle of absolute differences. Which elements of the array can possibly matter for the maximum?",
-    "Sort the array. The best cycle alternates small and large values: smallest, largest, second smallest, second largest.",
-    "Sort a; print 2·(a[n−1] + a[n−2] − a[0] − a[1]). O(n log n) per test."
-   ]
-  },
-  "codeforces:1985D": {
-   "title": "1985D · Manhattan Circle",
-   "url": "https://codeforces.com/contest/1985/problem/D",
-   "levels": [
-    "A Manhattan circle on a grid is a diamond. Where is a diamond widest, and how does that relate to its centre?",
-    "The centre row is halfway between the topmost and bottommost rows containing '#'; in that row, the centre column is halfway along the '#' segment.",
-    "1. top, bottom = first and last rows containing '#'; r = (top + bottom) / 2.\n2. In row r, left and right = first and last '#'; c = (left + right) / 2.\n3. Print r c (1-indexed). O(nm)."
-   ]
-  },
-  "codeforces:1955C": {
-   "title": "1955C · Inhabitant of the Deep Sea",
-   "url": "https://codeforces.com/contest/1955/problem/C",
-   "levels": [
-    "k can be 10^15, so you cannot simulate attack by attack. How many attacks hit the front in total, and how many hit the back?",
-    "The front receives ⌈k/2⌉ attacks and the back ⌊k/2⌋, independently of order. The front sinks the longest prefix with sum ≤ ⌈k/2⌉; the back sinks the longest suffix with sum ≤ ⌊k/2⌋. If k ≥ Σa every ship sinks.",
-    "1. If k ≥ Σa print n.\n2. front = (k + 1) / 2, back = k / 2.\n3. Count prefix ships while the running sum ≤ front; count suffix ships while the running sum ≤ back; print the total. O(n)."
-   ]
-  },
-  "codeforces:1923C": {
-   "title": "1923C · Find B",
-   "url": "https://codeforces.com/contest/1923/problem/C",
-   "levels": [
-    "Every element must change but stay positive. Elements equal to 1 can only go up — where does the extra amount come from?",
-    "Each 1 needs at least +1; every element x > 1 can drop to 1 and free x − 1. A subarray is good iff its length is > 1 and Σ(c_i − 1) ≥ the number of ones.",
-    "Precompute prefix sums of c and of the count of ones. For a query: len = r − l + 1, s = sum, ones = count. Print YES iff len > 1 and s − len ≥ ones. O(n + q)."
-   ]
-  },
-  "codeforces:1991C": {
-   "title": "1991C · Absolute Zero",
-   "url": "https://codeforces.com/contest/1991/problem/C",
-   "levels": [
-    "Think about parity: what does one operation do to the parities of the elements relative to each other?",
-    "If both parities appear, it is impossible — the operation keeps all elements' parities equal to each other or not. Otherwise always pick x = (max + min) / 2: the new maximum is at most half the old range, so about 30 steps suffice.",
-    "1. If parities are mixed print −1.\n2. Repeat up to 40 times: if all are zero stop; x = (max + min) / 2; record x; a_i = |a_i − x|.\n3. Print the recorded operations. O(40·n)."
-   ]
-  },
-  "codeforces:1637C": {
-   "title": "1637C · Andrew and Stones",
-   "url": "https://codeforces.com/contest/1637/problem/C",
-   "levels": [
-    "Every useful operation removes two stones from the middle piles. How many operations does a middle pile of size a need if nothing is wasted?",
-    "The answer is Σ⌈a_i/2⌉ over the middle piles, as long as some pile can supply a stone to fix the odd ones. It is impossible if every middle pile is 1, or n = 3 and a_2 is odd.",
-    "1. If n == 3 and a_2 is odd → −1.\n2. If all of a_2..a_{n−1} are 1 → −1.\n3. Otherwise print Σ ⌈a_i/2⌉ for i = 2..n−1 (64-bit). O(n)."
-   ]
-  },
-  "codeforces:1760C": {
-   "title": "1760C · Advantage",
-   "url": "https://codeforces.com/contest/1760/problem/C",
-   "levels": [
-    "For every participant you need the maximum of everyone else. Do you really have to recompute it n times?",
-    "Only the maximum and the second maximum matter: everyone compares against the maximum, except the holder of the maximum, who compares against the second maximum.",
-    "Find the top two values m1 ≥ m2 (duplicates count separately). For each i print s_i − (s_i == m1 ? m2 : m1). If the maximum appears twice, m2 == m1 and that answer is 0. O(n)."
-   ]
-  },
-  "codeforces:2061A": {
-   "title": "2061A · Kevin and Arithmetic",
-   "url": "https://codeforces.com/contest/2061/problem/A",
-   "levels": [
-    "After Kevin earns a point, s is divided until it becomes odd. Track only parity: which numbers can turn an odd s into an even one?",
-    "Put one even number first: s becomes even and scores. From then on s is odd, so every odd number scores and even numbers never do. With no even number at all, the first odd number cannot score.",
-    "c1 = number of odd elements. If there is at least one even element print c1 + 1, otherwise print c1 − 1. O(n)."
-   ]
+  "note": "Pre-generated demo hints for the public GitHub Pages demo. Written by an AI coding agent (Devin) from the problem statements; no live LLM call and no API key in the browser.",
+  "generatedBy": "Devin (AI)",
+  "generatedAt": "2026-10-24",
+  "hints": {
+    "atcoder:abc172_c": {
+      "title": "ABC172 C. Tsundoku",
+      "url": "https://atcoder.jp/contests/abc172/tasks/abc172_c",
+      "levels": [
+        "You always read a prefix of desk A and a prefix of desk B. Once you fix how many books you take from A, what is the best you can do on B?",
+        "Prefix sums + two pointers (or binary search). As the number of books taken from A grows, the longest affordable prefix of B can only shrink, so a single pointer moving backwards is enough. Classic WA: forgetting the case of taking 0 books from A.",
+        "1. Build prefix sums SA[0..N] and SB[0..M] in 64-bit.\n2. j = M. For i = 0..N: if SA[i] > K stop; while SB[j] > K − SA[i], decrement j; ans = max(ans, i + j).\n3. Print ans. O(N + M)."
+      ]
+    },
+    "atcoder:abc175_c": {
+      "title": "ABC175 C. Walking Takahashi",
+      "url": "https://atcoder.jp/contests/abc175/tasks/abc175_c",
+      "levels": [
+        "Values go up to 10^15, so simulating every move is impossible. Walking toward 0 is clearly right until you would overshoot — what do the remaining moves do after that?",
+        "Work with |X|. Take q = min(K, |X| / D) steps toward zero. If moves remain, you can only bounce between r = |X| − qD and r − D, so only the parity of the remaining moves matters.",
+        "1. X = |X|.\n2. q = min(K, X / D); X −= q·D; K −= q.\n3. If K is even print X, else print D − X.\nNever compute K·D directly — it overflows 64-bit. O(1)."
+      ]
+    },
+    "atcoder:abc194_e": {
+      "title": "ABC194 E. Mex Min",
+      "url": "https://atcoder.jp/contests/abc194/tasks/abc194_e",
+      "levels": [
+        "The minimum mex over all windows is some value x that is missing from at least one window. When is a value x missing from some window of length M?",
+        "x is absent from some length-M window exactly when two consecutive occurrences of x (counting virtual positions −1 and N) leave a gap of at least M cells. The answer is the smallest such x.",
+        "1. For every value record its positions; add sentinels −1 and N.\n2. x qualifies if some gap next − prev − 1 ≥ M.\n3. Print the smallest qualifying x in 0..N. O(N).\n(Alternative: slide the window keeping counts and a set of missing values.)"
+      ]
+    },
+    "atcoder:abc187_d": {
+      "title": "ABC187 D. Choose Me",
+      "url": "https://atcoder.jp/contests/abc187/tasks/abc187_d",
+      "levels": [
+        "Start from the state where you give no speeches. How much does the vote difference change when you speak in one town — and does it depend on the other towns?",
+        "A speech in town i changes (Takahashi − Aoki) by 2·A_i + B_i, independently of every other town. So greedily take the towns with the largest 2·A_i + B_i.",
+        "1. diff = −ΣA_i.\n2. Sort towns by 2·A_i + B_i descending.\n3. Add values one by one, counting, until diff > 0 (strictly). Use 64-bit. O(N log N)."
+      ]
+    },
+    "atcoder:abc121_d": {
+      "title": "ABC121 D. XOR World",
+      "url": "https://atcoder.jp/contests/abc121/tasks/abc121_d",
+      "levels": [
+        "Like range sums, a range XOR can be built from two prefix values. Write out 0 ⊕ 1 ⊕ … ⊕ n for small n — do you see a pattern?",
+        "g(n) = 0 ⊕ 1 ⊕ … ⊕ n depends only on n mod 4: it is n, 1, n + 1, 0. Then the answer is g(B) ⊕ g(A − 1).",
+        "1. g(n): n%4 == 0 → n, 1 → 1, 2 → n + 1, 3 → 0; define g(−1) = 0.\n2. Print g(B) ^ g(A − 1). Watch the A = 0 case. O(1)."
+      ]
+    },
+    "atcoder:abc136_e": {
+      "title": "ABC136 E. Max GCD",
+      "url": "https://atcoder.jp/contests/abc136/tasks/abc136_e",
+      "levels": [
+        "The operation never changes the total sum S. What does that tell you about any number that divides every element at the end?",
+        "Any answer d must divide S, and S has only about a thousand divisors — try them all. For a fixed d, each element is rounded down or up to a multiple of d; the cheapest plan rounds the largest residues up and the smallest down.",
+        "1. Enumerate divisors of S in O(√S).\n2. For each d: r_i = A_i mod d, sorted ascending; t = Σr_i / d elements must be rounded up (the t largest). Cost = sum of the N − t smallest residues.\n3. The largest d with cost ≤ K is the answer. O(√S + D·N log N)."
+      ]
+    },
+    "atcoder:abc131_d": {
+      "title": "ABC131 D. Megalomania",
+      "url": "https://atcoder.jp/contests/abc131/tasks/abc131_d",
+      "levels": [
+        "If finishing everything is possible, does the order matter? Try swapping two adjacent jobs whose deadlines are out of order.",
+        "Earliest-deadline-first is optimal (exchange argument). Sort by deadline and check that every prefix finishes in time.",
+        "Sort by B ascending; t = 0; for each job: t += A; if t > B print No. Otherwise print Yes.\nCommon WA: sorting by A instead of B. O(N log N)."
+      ]
+    },
+    "atcoder:dp_f": {
+      "title": "DP F. LCS",
+      "url": "https://atcoder.jp/contests/dp/tasks/dp_f",
+      "levels": [
+        "Computing the length is the classic part; this task asks you to print an actual string. Which information in the table tells you which move you made?",
+        "Standard LCS DP over prefixes, then reconstruct by walking backwards from the bottom-right corner, moving to a neighbour with the same value, or taking the character when you must move diagonally.",
+        "1. dp[i][j] = dp[i−1][j−1] + 1 if s[i−1] == t[j−1], else max(dp[i−1][j], dp[i][j−1]).\n2. From (|s|, |t|): if dp[i][j] == dp[i−1][j] → i−−; else if dp[i][j] == dp[i][j−1] → j−−; else take s[i−1], i−−, j−−.\n3. Reverse the collected characters. O(|s|·|t|). Storing strings inside the DP is the usual TLE/MLE."
+      ]
+    },
+    "atcoder:abc128_c": {
+      "title": "ABC128 C. Switches",
+      "url": "https://atcoder.jp/contests/abc128/tasks/abc128_c",
+      "levels": [
+        "Look at the constraints first: N ≤ 10. How many on/off combinations of switches exist in total?",
+        "Bit brute force: there are only 2^N ≤ 1024 states. For each one, check every bulb's parity condition.",
+        "for mask in 0..2^N − 1: for each bulb, count the switches s in its list with bit (s − 1) set; the state is valid if count % 2 == p_i for every bulb → ans++.\nCommon WA: off-by-one on the 1-indexed switch numbers. O(2^N · N · M)."
+      ]
+    },
+    "atcoder:abc146_c": {
+      "title": "ABC146 C. Buy an Integer",
+      "url": "https://atcoder.jp/contests/abc146/tasks/abc146_c",
+      "levels": [
+        "If you can afford the integer N, can you also afford every smaller integer? Use that monotonicity.",
+        "The price A·N + B·d(N) only increases with N, so binary search the largest affordable N in [0, 10^9].",
+        "lo = 0, hi = 10^9 + 1. While hi − lo > 1: mid = (lo + hi) / 2; if A·mid + B·digits(mid) ≤ X then lo = mid else hi = mid. Print lo.\nThe shop sells nothing above 10^9 — exceeding that cap is the usual WA. Use 64-bit. O(log 10^9)."
+      ]
+    },
+    "atcoder:arc096_a": {
+      "title": "ABC095 C. Half and Half",
+      "url": "https://atcoder.jp/contests/abc095/tasks/arc096_a",
+      "levels": [
+        "Two AB-pizzas can replace one A-pizza and one B-pizza. How many AB-pizzas could it ever make sense to buy?",
+        "Try every even number 2k of AB-pizzas for k = 0 .. max(X, Y) and buy the rest individually. Buying more AB-pizzas than you strictly need can be optimal when C is cheap.",
+        "ans = min over k in [0, max(X, Y)] of 2k·C + max(0, X − k)·A + max(0, Y − k)·B. O(max(X, Y))."
+      ]
+    },
+    "atcoder:abc085_d": {
+      "title": "ABC085 D. Katana Thrower",
+      "url": "https://atcoder.jp/contests/abc085/tasks/abc085_d",
+      "levels": [
+        "You only ever need to wield one katana — which one? And when is a single throw better than wielding?",
+        "Let amax = max a_i. Throw every katana with b_i > amax, largest first, until the monster dies; then wield the best katana for the remaining damage.",
+        "1. amax = max a.\n2. Sort b descending; for each b > amax: H −= b, cnt++; if H ≤ 0 print cnt.\n3. Otherwise print cnt + ceil(H / amax). O(N log N)."
+      ]
+    },
+    "codeforces:1934A": {
+      "title": "1934A · Too Min Too Max",
+      "url": "https://codeforces.com/contest/1934/problem/A",
+      "levels": [
+        "The four chosen indices form a cycle of absolute differences. Which elements of the array can possibly matter for the maximum?",
+        "Sort the array. The best cycle alternates small and large values: smallest, largest, second smallest, second largest.",
+        "Sort a; print 2·(a[n−1] + a[n−2] − a[0] − a[1]). O(n log n) per test."
+      ]
+    },
+    "codeforces:1985D": {
+      "title": "1985D · Manhattan Circle",
+      "url": "https://codeforces.com/contest/1985/problem/D",
+      "levels": [
+        "A Manhattan circle on a grid is a diamond. Where is a diamond widest, and how does that relate to its centre?",
+        "The centre row is halfway between the topmost and bottommost rows containing '#'; in that row, the centre column is halfway along the '#' segment.",
+        "1. top, bottom = first and last rows containing '#'; r = (top + bottom) / 2.\n2. In row r, left and right = first and last '#'; c = (left + right) / 2.\n3. Print r c (1-indexed). O(nm)."
+      ]
+    },
+    "codeforces:1955C": {
+      "title": "1955C · Inhabitant of the Deep Sea",
+      "url": "https://codeforces.com/contest/1955/problem/C",
+      "levels": [
+        "k can be 10^15, so you cannot simulate attack by attack. How many attacks hit the front in total, and how many hit the back?",
+        "The front receives ⌈k/2⌉ attacks and the back ⌊k/2⌋, independently of order. The front sinks the longest prefix with sum ≤ ⌈k/2⌉; the back sinks the longest suffix with sum ≤ ⌊k/2⌋. If k ≥ Σa every ship sinks.",
+        "1. If k ≥ Σa print n.\n2. front = (k + 1) / 2, back = k / 2.\n3. Count prefix ships while the running sum ≤ front; count suffix ships while the running sum ≤ back; print the total. O(n)."
+      ]
+    },
+    "codeforces:1923C": {
+      "title": "1923C · Find B",
+      "url": "https://codeforces.com/contest/1923/problem/C",
+      "levels": [
+        "Every element must change but stay positive. Elements equal to 1 can only go up — where does the extra amount come from?",
+        "Each 1 needs at least +1; every element x > 1 can drop to 1 and free x − 1. A subarray is good iff its length is > 1 and Σ(c_i − 1) ≥ the number of ones.",
+        "Precompute prefix sums of c and of the count of ones. For a query: len = r − l + 1, s = sum, ones = count. Print YES iff len > 1 and s − len ≥ ones. O(n + q)."
+      ]
+    },
+    "codeforces:1991C": {
+      "title": "1991C · Absolute Zero",
+      "url": "https://codeforces.com/contest/1991/problem/C",
+      "levels": [
+        "Think about parity: what does one operation do to the parities of the elements relative to each other?",
+        "If both parities appear, it is impossible — the operation keeps all elements' parities equal to each other or not. Otherwise always pick x = (max + min) / 2: the new maximum is at most half the old range, so about 30 steps suffice.",
+        "1. If parities are mixed print −1.\n2. Repeat up to 40 times: if all are zero stop; x = (max + min) / 2; record x; a_i = |a_i − x|.\n3. Print the recorded operations. O(40·n)."
+      ]
+    },
+    "codeforces:1637C": {
+      "title": "1637C · Andrew and Stones",
+      "url": "https://codeforces.com/contest/1637/problem/C",
+      "levels": [
+        "Every useful operation removes two stones from the middle piles. How many operations does a middle pile of size a need if nothing is wasted?",
+        "The answer is Σ⌈a_i/2⌉ over the middle piles, as long as some pile can supply a stone to fix the odd ones. It is impossible if every middle pile is 1, or n = 3 and a_2 is odd.",
+        "1. If n == 3 and a_2 is odd → −1.\n2. If all of a_2..a_{n−1} are 1 → −1.\n3. Otherwise print Σ ⌈a_i/2⌉ for i = 2..n−1 (64-bit). O(n)."
+      ]
+    },
+    "codeforces:1760C": {
+      "title": "1760C · Advantage",
+      "url": "https://codeforces.com/contest/1760/problem/C",
+      "levels": [
+        "For every participant you need the maximum of everyone else. Do you really have to recompute it n times?",
+        "Only the maximum and the second maximum matter: everyone compares against the maximum, except the holder of the maximum, who compares against the second maximum.",
+        "Find the top two values m1 ≥ m2 (duplicates count separately). For each i print s_i − (s_i == m1 ? m2 : m1). If the maximum appears twice, m2 == m1 and that answer is 0. O(n)."
+      ]
+    },
+    "codeforces:2061A": {
+      "title": "2061A · Kevin and Arithmetic",
+      "url": "https://codeforces.com/contest/2061/problem/A",
+      "levels": [
+        "After Kevin earns a point, s is divided until it becomes odd. Track only parity: which numbers can turn an odd s into an even one?",
+        "Put one even number first: s becomes even and scores. From then on s is odd, so every odd number scores and even numbers never do. With no even number at all, the first odd number cannot score.",
+        "c1 = number of odd elements. If there is at least one even element print c1 + 1, otherwise print c1 − 1. O(n)."
+      ]
+    },
+    "atcoder:abc336_e": {
+      "title": "ADT_ALL_20260728_1 H. Digit Sum Divisible",
+      "url": "https://atcoder.jp/contests/adt_all_20260728_1/tasks/abc336_e",
+      "levels": [
+        "The digit sum of any n ≤ 10^14 is at most 9·14 = 126. What if you fixed the digit sum before counting?",
+        "For each target sum s = 1..126, run a digit DP over the digits of N that tracks (digit sum so far, value mod s, tight). Count numbers whose final digit sum is exactly s and whose remainder is 0. Classic WA: accepting sum ≤ s instead of sum == s, or counting n = 0.",
+        "1. For s in 1..126: dp[sum][rem] over positions, with a separate 'still equal to N's prefix' path.\n2. Transition with digit d (0..9, capped by N's digit on the tight path): sum += d (skip if > s), rem = (rem·10 + d) mod s.\n3. Add dp[s][0] at the end (tight path included).\n4. Sum the counts over all s. About 126 × 15 × 126 × 126 × 10 cheap steps — fine with flat arrays."
+      ]
+    },
+    "atcoder:arc086_b": {
+      "title": "ABC081 D. Non-decreasing",
+      "url": "https://atcoder.jp/contests/abc081/tasks/arc086_b",
+      "levels": [
+        "If every element is ≥ 0 (or every element is ≤ 0), making the sequence non-decreasing is easy. Can you first make all elements share a sign?",
+        "Take the element with the largest absolute value and add it to every element (N operations): now everything has its sign. Then, if all ≥ 0, add a_i to a_{i+1} from left to right; if all ≤ 0, add a_{i+1} to a_i from right to left. Classic WA: choosing the maximum instead of the maximum |a_i|.",
+        "1. m = index of max |a_i|.\n2. For every y: output (m, y) — all elements now have the sign of a_m.\n3. If a_m ≥ 0: for i = 1..N−1 output (i, i+1) (prefix sums grow).\n4. Else: for i = N..2 output (i, i−1).\n5. That is at most 2N − 1 operations."
+      ]
+    },
+    "atcoder:abc361_f": {
+      "title": "ADT_HARD_20241107_3 I. x = a^b",
+      "url": "https://atcoder.jp/contests/adt_hard_20241107_3/tasks/abc361_f",
+      "levels": [
+        "Perfect squares are easy to count with an exact integer square root. What remains are powers with exponent b ≥ 3 — how large can the base be then?",
+        "For b ≥ 3 and N ≤ 10^18 the base is at most 10^6. Enumerate every a^b ≤ N with a ≥ 2, b ≥ 3, drop the ones that are perfect squares (already counted), dedupe with a set, then add isqrt(N). Classic WA: floating-point sqrt near 10^18 — correct it with an integer adjustment loop.",
+        "1. ans = isqrt(N) (exact: adjust r while r·r > N or (r+1)² ≤ N).\n2. For a = 2..10^6: x = a³; while x ≤ N: if x is not a perfect square, insert x into a set; x *= a (guard overflow with x > N / a).\n3. ans += size of the set."
+      ]
+    },
+    "atcoder:arc061_b": {
+      "title": "ABC045 D. Snuke's Coloring",
+      "url": "https://atcoder.jp/contests/abc045/tasks/arc061_b",
+      "levels": [
+        "There are about 10^18 3×3 squares, but each black cell lies in at most 9 of them. Count only the squares that contain something.",
+        "For every black cell, increment a hash-map counter for each of the ≤ 9 top-left corners (inside [1, H−2] × [1, W−2]) whose square contains it. A square's counter equals its number of black cells. Squares that never appear have 0: (H−2)(W−2) minus the map size. Classic WA: 32-bit overflow in (H−2)(W−2).",
+        "1. For each black (a, b): for top-left (x, y) with x in [a−2, a], y in [b−2, b], 1 ≤ x ≤ H−2, 1 ≤ y ≤ W−2: cnt[(x, y)]++.\n2. ans[j] = number of keys with cnt = j for j = 1..9.\n3. ans[0] = (H−2)(W−2) − (number of keys), in 64-bit."
+      ]
+    },
+    "atcoder:abc328_d": {
+      "title": "ADT_ALL_20260918_2 G. Take ABC",
+      "url": "https://atcoder.jp/contests/adt_all_20260918_2/tasks/abc328_d",
+      "levels": [
+        "Removing an \"ABC\" can create a new \"ABC\" across the gap. Re-scanning from the start each time is O(N²).",
+        "Push characters onto a stack; whenever the top three are A, B, C (in that order), pop them. Each character is pushed and popped at most once, and the stack is the final string. Classic TLE: string replace in a loop.",
+        "1. st = empty string.\n2. For each c in S: st.push(c); if st ends with \"ABC\", pop 3.\n3. Print st."
+      ]
+    },
+    "atcoder:arc081_a": {
+      "title": "ABC071 C. Make a Rectangle",
+      "url": "https://atcoder.jp/contests/abc071/tasks/arc081_a",
+      "levels": [
+        "Each side of the rectangle needs two sticks of the same length. Which lengths can be used, and how many times?",
+        "Count each length: 2–3 sticks give one pair, 4+ give two pairs (a square is allowed). Take the two largest pairs; the answer is their product, or 0 if there are fewer than two pairs. Classic WA: forgetting the square case, and 32-bit overflow of the area.",
+        "1. Count lengths in a map.\n2. Build a list of pairs: push the length once if count ≥ 2, twice if count ≥ 4.\n3. Sort descending; answer = p[0] · p[1] in 64-bit, or 0."
+      ]
+    },
+    "atcoder:abc112_d": {
+      "title": "ABC112 D. Partition",
+      "url": "https://atcoder.jp/contests/abc112/tasks/abc112_d",
+      "levels": [
+        "If the gcd is d, every number is a multiple of d — so their sum M is too, and every number is at least d.",
+        "The answer is the largest divisor d of M with d · N ≤ M (use N−1 copies of d and one copy of M − (N−1)d). Enumerate divisors up to √M. Classic TLE: trying every d from M downwards.",
+        "1. For i = 1..√M: if M % i == 0, check d = i and d = M / i.\n2. Keep the largest d with d · N ≤ M.\n3. Print it."
+      ]
+    },
+    "atcoder:arc084_a": {
+      "title": "ABC077 C. Snuke Festival",
+      "url": "https://atcoder.jp/contests/abc077/tasks/arc084_a",
+      "levels": [
+        "Fix the middle part. What do you need to know about the upper and lower parts?",
+        "Sort A and C. For each B_j, multiply (number of A_i < B_j) by (number of C_k > B_j), both by binary search. Classic WA: using ≤ instead of strict <, and 32-bit overflow (the answer can reach 10^15).",
+        "1. Sort A and C.\n2. For each b in B: x = lower_bound(A, b) (count < b); y = N − upper_bound(C, b) (count > b).\n3. ans += x · y in 64-bit."
+      ]
+    },
+    "atcoder:arc064_a": {
+      "title": "ABC048 C. Boxes and Candies",
+      "url": "https://atcoder.jp/contests/abc048/tasks/arc064_a",
+      "levels": [
+        "Process the boxes from left to right. When a_i + a_{i+1} exceeds x, which of the two boxes is it better to eat from?",
+        "Greedy: first cap a_1 at x. Then for each i, eat the excess a_i + a_{i+1} − x from the right box a_{i+1} — it also helps the next pair, and the left box is already fixed. Classic WA: forgetting that a_1 alone can exceed x, and 32-bit overflow of the total.",
+        "1. If a_1 > x: ans += a_1 − x; a_1 = x.\n2. For i = 1..N−1: e = a_i + a_{i+1} − x; if e > 0: ans += e; a_{i+1} −= e.\n3. Print ans (64-bit)."
+      ]
+    },
+    "atcoder:arc070_b": {
+      "title": "ABC056 D. No Need",
+      "url": "https://atcoder.jp/contests/abc056/tasks/arc070_b",
+      "levels": [
+        "If a card is unnecessary, every smaller card is unnecessary too. That monotonicity suggests sorting and a binary search.",
+        "Card i is necessary iff the other cards have a subset whose sum lies in [K − a_i, K − 1]. Check it with a subset-sum DP (bitset) over sums < K that skips card i. Sort, then binary search the boundary: O(N·K·log N). Classic WA: cards with a_i ≥ K are always necessary.",
+        "1. Sort a ascending.\n2. necessary(i): if a_i ≥ K return true; dp = subset sums < K of all cards except i; return any dp[s] for s in [K − a_i, K − 1].\n3. Binary search the smallest necessary index t.\n4. Answer = t (cards before it are unnecessary)."
+      ]
+    },
+    "atcoder:arc060_b": {
+      "title": "ABC044 D. Digit Sum",
+      "url": "https://atcoder.jp/contests/abc044/tasks/arc060_b",
+      "levels": [
+        "For small bases, just try them. For a base larger than √n, how many digits does n have in that base?",
+        "Brute force b = 2..√n. For b > √n, n has two digits p, q: p + q = s and p(b − 1) = n − s. Try p from √n down to 1 (larger p ⇒ smaller b): b = (n − s)/p + 1 when divisible, then check 0 ≤ q = s − p < b and 1 ≤ p < b. Special cases: s = n ⇒ b = n + 1; s > n ⇒ −1.",
+        "1. If s == n: print n + 1. If s > n: print −1.\n2. For b = 2..√n: if digit sum of n in base b == s, print b.\n3. For p = √n..1: if (n − s) % p == 0: b = (n − s)/p + 1; q = s − p; if b ≥ 2, p < b, 0 ≤ q < b: print b.\n4. Otherwise print −1."
+      ]
+    },
+    "atcoder:agc002_b": {
+      "title": "AGC002 B. Box and Ball",
+      "url": "https://atcoder.jp/contests/agc002/tasks/agc002_b",
+      "levels": [
+        "Track two things for every box: how many balls it holds, and whether the red ball could be in it.",
+        "On a move x → y: if x may hold red, y now may too. Decrement cnt[x] and increment cnt[y]; if cnt[x] becomes 0, x can no longer hold red. The answer counts boxes still marked. Classic WA: clearing x's mark while it still has balls.",
+        "1. cnt[i] = 1 for all; red[1] = true.\n2. For each (x, y): if red[x]: red[y] = true. cnt[x]−−, cnt[y]++. If cnt[x] == 0: red[x] = false.\n3. Print the number of boxes with red[i] = true."
+      ]
+    },
+    "atcoder:abc218_c": {
+      "title": "ADT_ALL_20260727_1 F. Shapes",
+      "url": "https://atcoder.jp/contests/adt_all_20260727_1/tasks/abc218_c",
+      "levels": [
+        "There are only four rotations. Translation can be handled by aligning both shapes on a reference cell.",
+        "Rotate S by 90° up to four times. For each rotation, compare the sets of # cells after shifting both shapes so that their first # in row-major order sits at the origin. The counts of # must also match. Classic WA: comparing raw grids without normalising the translation.",
+        "1. If the numbers of # differ: No.\n2. norm(G) = list of (r − r0, c − c0) for # cells, where (r0, c0) is the first # in row-major order.\n3. For k = 0..3: if norm(S) == norm(T): Yes. Rotate S by 90°.\n4. Otherwise No."
+      ]
+    },
+    "atcoder:abc021_c": {
+      "title": "ABC021 C. 正直者の高橋くん",
+      "url": "https://atcoder.jp/contests/abc021/tasks/abc021_c",
+      "levels": [
+        "All roads have length 1, so BFS gives the distances. How many shortest paths reach each town?",
+        "BFS from a with ways[a] = 1. When looking at an edge u → v with dist[v] == dist[u] + 1, add ways[u] to ways[v] (mod 10^9+7). Classic WA: also adding when v was reached earlier at a smaller distance, or treating the roads as one-way.",
+        "1. BFS from a, recording dist.\n2. Process vertices in BFS order: for each neighbour v with dist[v] == dist[u] + 1: ways[v] = (ways[v] + ways[u]) mod 1e9+7.\n3. Print ways[b]."
+      ]
+    },
+    "atcoder:abc015_4": {
+      "title": "ABC015 D. 高橋くんの苦悩",
+      "url": "https://atcoder.jp/contests/abc015/tasks/abc015_4",
+      "levels": [
+        "This is a knapsack with an extra limit on how many items you may take.",
+        "dp[k][w] = best total importance using k screenshots of total width w. Process items one by one and loop k and w downwards (0/1 knapsack). The answer is the maximum dp[k][w] with k ≤ K and w ≤ W. Classic WA: looping upwards and reusing the same screenshot.",
+        "1. dp = −∞ except dp[0][0] = 0.\n2. For each (A_i, B_i): for k = K−1..0, for w = W−A_i..0: dp[k+1][w+A_i] = max(dp[k+1][w+A_i], dp[k][w] + B_i).\n3. Print the maximum over all dp[k][w]."
+      ]
+    },
+    "atcoder:arc035_c": {
+      "title": "ARC035 C. アットコーダー王国の交通事情",
+      "url": "https://atcoder.jp/contests/arc035/tasks/arc035_c",
+      "levels": [
+        "Floyd–Warshall once is fine. After adding one road, do you really need to rerun it from scratch?",
+        "After adding road (x, y, z), any improved path uses it once: d[i][j] = min(d[i][j], d[i][x] + z + d[y][j], d[i][y] + z + d[x][j]). That is O(N²) per query instead of O(N³). Then sum d[i][j] over i < j. Classic TLE: rerunning Floyd for every query.",
+        "1. Floyd–Warshall on the initial graph.\n2. For each new road (x, y, z): update every pair with the formula above.\n3. Print the sum over i < j (64-bit)."
+      ]
+    },
+    "codeforces:1491C": {
+      "title": "1491C · Pekora and Trampoline",
+      "url": "https://codeforces.com/contest/1491/problem/C",
+      "levels": [
+        "Starting from the first trampoline with strength > 1 is always optimal, and each pass lowers it by 1. Instead of simulating passes, count how many times each trampoline is landed on by earlier passes.",
+        "Keep cnt[i] = landings on i coming from earlier starts. Trampoline i needs max(0, S_i − 1 − cnt[i]) new passes. One pass at strength t lands on i + t, so its passes land once on each of i+2..i+S_i — add them with a difference array. Surplus landings cnt[i] − (S_i − 1) carry over to i + 1. Classic TLE: simulating every pass in O(N).",
+        "1. ans = 0; diff = zeros.\n2. For i = 1..N: cnt[i] += running sum of diff.\n3. ans += max(0, S_i − 1 − cnt[i]).\n4. Mark landings on [i+2, min(N, i+S_i)] with +1 (difference array).\n5. If cnt[i] > S_i − 1: carry cnt[i] − (S_i − 1) to cnt[i+1].\n6. Print ans (64-bit)."
+      ]
+    },
+    "codeforces:1401F": {
+      "title": "1401F · Reverse and Swap",
+      "url": "https://codeforces.com/contest/1401/problem/F",
+      "levels": [
+        "Both operations only permute positions inside a segment tree over 2^n leaves. Can each one be described as a change to how indices are read?",
+        "Reverse(k) flips bits 0..k−1 of every index; Swap(k) flips bit k. Keep a global xor mask: reverse(k) → mask ^= 2^k − 1, swap(k) → mask ^= 2^k. Point updates go to position x ^ mask. For sums, descend the tree and swap the two children at level j when bit j of the mask is set. Classic WA: applying the mask to point updates but not to the range descent.",
+        "1. Build a sum segment tree on the original array (0-indexed, 2^n leaves).\n2. Replace(x, v): update leaf (x − 1) ^ mask.\n3. Reverse(k): mask ^= (1 << k) − 1. Swap(k): mask ^= 1 << k.\n4. Sum(l, r): recurse from the root; a node whose children differ in index bit j visits them in swapped order when bit j of mask is set (map the query range through the same swaps)."
+      ]
+    },
+    "codeforces:445E": {
+      "title": "445E · DZY Loves Colors",
+      "url": "https://codeforces.com/contest/445/problem/E",
+      "levels": [
+        "Painting turns a whole range into a single colour. How many single-colour segments can paint operations destroy in total?",
+        "Segment tree storing the sum of colourfulness (with a lazy add) and the node's colour if it is uniform (else −1). A paint recurses only until it reaches uniform nodes fully inside [l, r]: add |x − c| · len there via the lazy tag, then set the colour to x. The number of visited nodes is amortised O((n + m) log n). Classic WA: 32-bit sums.",
+        "1. Node: sum, addLazy (per unit), color (−1 if mixed).\n2. paint(node, l, r, x): if node is inside [l, r] and color != −1: addLazy += |x − color|, sum += |x − color| · len, color = x; return. Otherwise push down, recurse, pull up (color = children's colour if equal, else −1).\n3. query(l, r): standard range sum with lazy push."
+      ]
+    },
+    "codeforces:1093E": {
+      "title": "1093E · Intersection of Permutations",
+      "url": "https://codeforces.com/contest/1093/problem/E",
+      "levels": [
+        "Map each value v to the point (position of v in a, position of v in b). What does a query look like in that picture?",
+        "A query counts points in the rectangle [la, ra] × [lb, rb]; swapping b_x and b_y moves two points. You need dynamic 2D rectangle counting: a BIT over x whose nodes hold order-statistic sets of y, offline CDQ divide and conquer, or sqrt decomposition. Classic TLE: intersecting sets per query.",
+        "1. posA[v] = index of v in a; point for v is (posA[v], posB[v]).\n2. Query(la, ra, lb, rb) = count(ra, lb..rb) − count(la − 1, lb..rb) with a BIT of sorted structures (or process all events offline with CDQ).\n3. Swap(x, y): remove the points of values b_x and b_y, swap them, insert them back.\n4. Each operation is O(log² n)."
+      ]
+    }
   }
- }
 }

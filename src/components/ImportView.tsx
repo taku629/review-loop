@@ -178,6 +178,11 @@ export function ImportView({ onToast, onDone, demoRequest, onDemoConsumed }: Pro
             </div>
             <div className="row">
               <button className="btn btn-sm btn-ghost" onClick={() => setPicked(new Set(drafts.filter((d) => !state.problems[problemId(d.judge, d.key)]).map((d) => problemId(d.judge, d.key))))}>{t('Select all new')}</button>
+              {drafts.some((d) => demoHints[problemId(d.judge, d.key)]) && (
+                <button className="btn btn-sm btn-ghost" onClick={() => setPicked(new Set(drafts.map((d) => problemId(d.judge, d.key)).filter((id) => demoHints[id] && !state.problems[id])))}>
+                  {t('Select ✦ hint problems')}
+                </button>
+              )}
               <button className="btn btn-sm btn-ghost" onClick={() => setPicked(new Set())}>{t('Clear')}</button>
               <button className="btn btn-sm btn-primary" disabled={picked.size === 0} onClick={add}>{t('Add {n} to my loop', { n: picked.size })}</button>
             </div>

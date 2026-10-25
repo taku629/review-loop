@@ -8,7 +8,7 @@ import { JUDGE_LABEL, type Judge } from '../lib/types';
 import { JudgeBadge } from './JudgeBadge';
 import { StruggleStatus } from './VerdictChips';
 
-type Filter = 'all' | 'due' | 'unsolved' | 'new';
+type Filter = 'all' | 'due' | 'unsolved' | 'new' | 'hints';
 
 export function LibraryView({ onOpen, onGo }: { onOpen: (id: string) => void; onGo: () => void }) {
   const demoHints = useDemoHints();
@@ -23,7 +23,7 @@ export function LibraryView({ onOpen, onGo }: { onOpen: (id: string) => void; on
   const rows = all
     .filter((p) => judge === 'all' || p.judge === judge)
     .filter((p) =>
-      filter === 'due' ? p.card.due <= today : filter === 'unsolved' ? p.struggle && !p.struggle.solved : filter === 'new' ? p.history.length === 0 : true,
+      filter === 'hints' ? !!demoHints[p.id] : filter === 'due' ? p.card.due <= today : filter === 'unsolved' ? p.struggle && !p.struggle.solved : filter === 'new' ? p.history.length === 0 : true,
     )
     .filter((p) => !q.trim() || `${p.title} ${p.key} ${p.note}`.toLowerCase().includes(q.trim().toLowerCase()))
     .sort((a, b) => a.card.due.localeCompare(b.card.due) || a.title.localeCompare(b.title));
@@ -53,9 +53,9 @@ export function LibraryView({ onOpen, onGo }: { onOpen: (id: string) => void; on
           <button key={j} className="filter-chip" aria-pressed={judge === j} onClick={() => setJudge(j)}>{JUDGE_LABEL[j]}</button>
         ))}
         <span className="faint">|</span>
-        {(['all', 'due', 'unsolved', 'new'] as Filter[]).map((f) => (
+        {(['all', 'due', 'unsolved', 'new', 'hints'] as Filter[]).map((f) => (
           <button key={f} className="filter-chip" aria-pressed={filter === f} onClick={() => setFilter(f)}>
-            {t(f === 'all' ? 'Any status' : f === 'due' ? 'Due' : f === 'unsolved' ? 'Never solved' : 'Not reviewed')}
+            {t(f === 'all' ? 'Any status' : f === 'due' ? 'Due' : f === 'unsolved' ? 'Never solved' : f === 'new' ? 'Not reviewed' : 'Has ✦ hints')}
           </button>
         ))}
       </div>

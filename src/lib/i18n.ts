@@ -203,6 +203,8 @@ export const JA: Record<string, string> = {
   "Last 20 weeks": "直近20週間",
   "Next 7 days": "次の7日間",
   "{n}-day streak": "{n}日連続",
+  "Has ✦ hints": "✦ ヒントあり",
+  "Select ✦ hint problems": "✦ ヒント付きを選択",
   'import.invalid': '「{handle}」は{judge}のハンドルとして正しくありません（英数字と _ のみ）。打ち間違いや余分な空白を確認してください。',
   'import.not-found': '{judge}で「{handle}」の提出が見つかりません。ハンドルの綴りを確認してください。',
   'import.rate-limit': '{judge}のAPIがレート制限中です。少し待ってから再試行してください。',
