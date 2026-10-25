@@ -57,6 +57,7 @@ export default function App() {
       const snap = await loadDemoSnapshot();
       const picks = demoPicks(snap);
       dispatch({ type: 'add', drafts: picks, today });
+      dispatch({ type: 'settings', patch: { known: [...snap.atcoder, ...snap.codeforces].map((d) => `${d.judge}:${d.key}`), syncedAt: Date.now() } });
       showToast(translate(lang, 'Loaded {n} real struggles of chokudai / tourist (captured {date}) · rate one below', { n: picks.length, date: snap.capturedAt }));
     } catch {
       dispatch({ type: 'add', drafts: SAMPLE_DRAFTS, today });

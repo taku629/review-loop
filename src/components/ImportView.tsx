@@ -117,6 +117,7 @@ export function ImportView({ onToast, onDone, demoRequest, onDemoConsumed }: Pro
     if (!drafts) return;
     const chosen = interleave(drafts.filter((d) => picked.has(problemId(d.judge, d.key))));
     dispatch({ type: 'add', drafts: chosen, today });
+    dispatch({ type: 'settings', patch: { known: [...new Set([...(state.settings.known ?? []), ...drafts.map((d) => problemId(d.judge, d.key))])], syncedAt: Date.now() } });
     const per = state.settings.newPerDay;
     onToast(t('Added {n} problems · up to {per} new per day are scheduled, starting today', { n: chosen.length, per }));
     setDrafts(null);

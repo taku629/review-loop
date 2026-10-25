@@ -1,5 +1,5 @@
 import { computeActivity } from '../lib/activity';
-import { addDays, formatDayOfMonth, formatShort, formatWeekday, relativeDays } from '../lib/dates';
+import { todayISO, addDays, formatDayOfMonth, formatShort, formatWeekday, relativeDays } from '../lib/dates';
 import { plural, useLang, useT } from '../lib/i18n';
 import { formatInterval, review } from '../lib/srs';
 import { useDemoHints } from '../lib/hints';
@@ -7,6 +7,7 @@ import { selectDue, useStore } from '../lib/store';
 import type { Rating } from '../lib/types';
 import { useEffect, useRef, useState } from 'react';
 import { shortcutFor, shouldIgnoreKeys } from '../lib/shortcuts';
+import { syncHandles } from '../lib/sync';
 import { DemoTour } from './DemoTour';
 import { LoopMark } from './Logo';
 import { ReviewRow } from './ReviewRow';
@@ -26,6 +27,7 @@ export function TodayView({ onOpen, onToast, onGo, onDemo }: Props) {
   const lang = useLang();
   const [sel, setSel] = useState(0);
   const [kb, setKb] = useState(false);
+  const [syncing, setSyncing] = useState(false);
   const onKey = useRef<(e: KeyboardEvent) => void>(() => {});
   useEffect(() => {
     const h = (e: KeyboardEvent) => onKey.current(e);
@@ -76,6 +78,23 @@ export function TodayView({ onOpen, onToast, onGo, onDemo }: Props) {
     );
   }
 
+  const canSync = !!(state.settings.atcoder || state.settings.codeforces);
+  const sync = async () => {
+    setSyncing(true);
+    try {
+      const r = await syncHandles(state.settings, state.problems);
+      if (r.fresh.length) dispatch({ type: 'add', drafts: r.fresh, today });
+      if (Object.keys(r.checked).length) dispatch({ type: 'settings', patch: { known: r.known, syncedAt: Date.now() } });
+      const checked = Object.values(r.checked).reduce((a, b) => a + b, 0);
+      if (r.errors.length && !checked) onToast(t('Sync failed: {msg}', { msg: r.errors.join(' / ') }));
+      else if (r.baseline) onToast(t('Sync baseline saved ({n} struggles). From now on only new ones are added.', { n: r.known.length }));
+      else if (r.fresh.length) onToast(t('Synced: {n} new struggles added to your loop', { n: r.fresh.length }));
+      else onToast(t('Up to date — no new struggles since the last sync ({n} checked)', { n: checked }));
+    } finally {
+      setSyncing(false);
+    }
+  };
+
   const rate = (id: string, title: string, rating: Rating) => {
     const p = state.problems[id];
     if (!p) return;
@@ -120,6 +139,14 @@ export function TodayView({ onOpen, onToast, onGo, onDemo }: Props) {
         <div style={{ minWidth: 220 }}>
           <div className="hint-text">{t('{done} / {total} reviewed today', { done: reviewedToday, total })}</div>
           <div className="progress"><span style={{ width: `${total ? (reviewedToday / total) * 100 : 0}%` }} /></div>
+          {canSync && (
+            <div className="sync-row">
+              <button className="btn btn-sm" onClick={() => void sync()} disabled={syncing} title={t('Re-fetch your handles and add only newly failed problems')}>
+                {syncing ? t('Syncing…') : t('↻ Sync new struggles')}
+              </button>
+              {state.settings.syncedAt && <span className="faint">{t('last {date}', { date: formatShort(todayISO(0, new Date(state.settings.syncedAt))) })}</span>}
+            </div>
+          )}
           {streak > 0 && <div className="streak-pill">🔥 {t('{n}-day streak', { n: streak })}</div>}
         </div>
       </div>

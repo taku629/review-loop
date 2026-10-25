@@ -48,6 +48,9 @@ export interface Settings {
   clockOffset: number;
   demoTour?: boolean;
   lang?: Lang;
+  /** Every struggle id seen by an import or sync — the baseline for incremental re-sync. */
+  known?: string[];
+  syncedAt?: number;
 }
 
 export interface AppState {
