@@ -7,6 +7,7 @@ import { StruggleStatus, VerdictChips } from './VerdictChips';
 
 interface Props {
   problem: Problem;
+  hasDemoHints?: boolean;
   today: string;
   onRate: (rating: Rating) => void;
   onOpen: () => void;
@@ -14,7 +15,7 @@ interface Props {
 
 const LABEL: Record<Rating, string> = { easy: 'Easy', hard: 'Hard', failed: 'Failed' };
 
-export function ReviewRow({ problem, today, onRate, onOpen }: Props) {
+export function ReviewRow({ problem, hasDemoHints, today, onRate, onOpen }: Props) {
   const [leaving, setLeaving] = useState(false);
   const preview = previewIntervals(problem.card);
   const overdue = diffDays(today, problem.card.due);
@@ -37,6 +38,7 @@ export function ReviewRow({ problem, today, onRate, onOpen }: Props) {
           {problem.difficulty != null && <span className="mono">★ {problem.difficulty}</span>}
           {problem.history.length === 0 ? <span>new</span> : <span>review #{problem.history.length + 1}</span>}
           {overdue > 0 && <span className="overdue">overdue {overdue}d</span>}
+          {hasDemoHints && <span className="tag tag-hint" title="Pre-generated AI demo hints">✦ hints</span>}
         </div>
         {problem.note && <div className="note-preview">{problem.note}</div>}
       </div>

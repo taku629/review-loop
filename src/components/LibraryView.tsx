@@ -1,3 +1,4 @@
+import { useDemoHints } from '../lib/hints';
 import { useMemo, useState } from 'react';
 import { formatShort, relativeDays } from '../lib/dates';
 import { formatInterval } from '../lib/srs';
@@ -9,6 +10,7 @@ import { StruggleStatus } from './VerdictChips';
 type Filter = 'all' | 'due' | 'unsolved' | 'new';
 
 export function LibraryView({ onOpen, onGo }: { onOpen: (id: string) => void; onGo: () => void }) {
+  const demoHints = useDemoHints();
   const { state, today } = useStore();
   const [judge, setJudge] = useState<Judge | 'all'>('all');
   const [filter, setFilter] = useState<Filter>('all');
@@ -66,6 +68,7 @@ export function LibraryView({ onOpen, onGo }: { onOpen: (id: string) => void; on
                 <td><JudgeBadge judge={p.judge} /></td>
                 <td>
                   {p.title}
+                  {demoHints[p.id] && <> <span className="tag tag-hint" title="Pre-generated AI demo hints">✦ hints</span></>}
                   {p.note && <div className="faint" style={{ fontSize: 12 }}>Note: {p.note}</div>}
                 </td>
                 <td>{p.struggle ? <StruggleStatus struggle={p.struggle} /> : <span className="faint">manual</span>}</td>
