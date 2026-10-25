@@ -269,3 +269,9 @@ td.overdue { font-size: 14px; }
 .forecast-mini { margin-top: 0; }
 .streak-pill { margin-top: 8px; font-size: 13px; font-weight: 600; color: #fbbf24; }
 @media (max-width: 720px) { .hm { width: 10px; height: 10px; } .heatmap, .hm-col { gap: 2px; } }
+
+/* ---------- keyboard ---------- */
+.kbd-hint { margin: 0 0 10px; }
+kbd { font-family: var(--mono); font-size: 11px; padding: 1px 6px; border-radius: 5px; border: 1px solid var(--border); border-bottom-width: 2px; background: var(--surface-2); color: var(--text); }
+.review-row.selected { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+@media (hover: none) and (pointer: coarse) { .kbd-hint { display: none; } }
