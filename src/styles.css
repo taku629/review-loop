@@ -184,7 +184,15 @@ table.lib tr.clickable:hover td { background: #141d35; }
   .stats { display: none; }
   .review-row { grid-template-columns: 1fr; }
   .rate .btn { flex: 1; }
-  .forecast { grid-template-columns: repeat(4, 1fr); }
+  .forecast { grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; }
+  .forecast-day { padding: 8px 2px; font-size: 11px; }
+  .forecast-day b { font-size: 15px; }
+  .hero { padding: 32px 16px; }
+  .hero .btn { white-space: normal; max-width: 100%; }
+  table.lib { font-size: 13px; }
+  table.lib th, table.lib td { padding: 8px 6px; }
+  table.lib th:nth-child(n + 5), table.lib td:nth-child(n + 5) { display: none; }
+  .toast { width: max-content; max-width: calc(100vw - 32px); bottom: 16px; }
   .kv { grid-template-columns: repeat(2, 1fr); }
   .tab { padding: 6px 8px; }
 }
@@ -203,6 +211,9 @@ td.overdue { font-size: 14px; }
 .demo-steps li > div { flex: 1 1 140px; }
 .demo-steps .num { flex: none; width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; font-size: 12px; font-weight: 700; border: 1px solid var(--accent); color: var(--accent); }
 .demo-steps li.done .num { background: var(--accent); color: #fff; }
-@media (max-width: 760px) { .demo-steps { grid-template-columns: 1fr; } }
+@media (max-width: 760px) {
+  .demo-steps { grid-template-columns: 1fr; }
+  .demo-tour-head { flex-wrap: nowrap; align-items: flex-start; }
+}
 
 .warn-text { color: #f5b942; }
